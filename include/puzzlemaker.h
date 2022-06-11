@@ -1,14 +1,14 @@
 #ifndef PUZZLEMAKER_H
 #define PUZZLEMAKER_H
 
-#include <string>
-#include <gtkmm.h>
 #include <gdkmm/pixbuf.h>
+#include <gtkmm.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/image.h>
 #include <gtkmm/window.h>
+#include <string>
 
 class PuzzleMaker : public Gtk::Window
 {

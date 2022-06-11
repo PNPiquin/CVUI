@@ -1,11 +1,12 @@
 #include "puzzlemaker.h"
+#include "utils/pixbuf.h"
 #include <iostream>
 
 PuzzleMaker::PuzzleMaker()
-: m_grid(),
-  m_button("Load"),
-  m_input_path_entry(),
-  m_image()
+  : m_grid()
+  , m_button("Load")
+  , m_input_path_entry()
+  , m_image()
 {
   // Init private attributes
   input_path = "";
@@ -29,14 +30,18 @@ PuzzleMaker::PuzzleMaker()
   m_button.show();
 }
 
-PuzzleMaker::~PuzzleMaker()
-{
-}
+PuzzleMaker::~PuzzleMaker() {}
 
 void PuzzleMaker::on_button_clicked()
 {
+  // Extract image path
   input_path = m_input_path_entry.get_buffer()->get_text();
-  auto pixbuf = Gdk::Pixbuf::create_from_file(input_path)->scale_simple(400, 200, Gdk::InterpType::INTERP_NEAREST);
-  m_image.set(pixbuf);
   std::cout << "Load file: " << input_path << std::endl;
+
+  // Load and resize raw image
+  Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
+  int window_width = get_width();
+  auto pixbuf = utils::resize_pixbuf(raw_pixbuf, window_width, window_width);
+  // Set image
+  m_image.set(pixbuf);
 }

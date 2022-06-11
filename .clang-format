@@ -1,0 +1,7 @@
+BasedOnStyle: Mozilla
+
+ColumnLimit: 120
+
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000000
