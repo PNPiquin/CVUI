@@ -9,11 +9,16 @@ PuzzleMaker::PuzzleMaker()
   , m_image()
 {
   // Init private attributes
+  width = 600;
+  height = 200;
   input_path = "";
 
   // Sets the border width of the window.
   set_border_width(10);
-  set_default_size(400, 200);
+  set_default_size(width, height);
+
+  // Configure configuration callbacks
+  signal_configure_event().connect(sigc::mem_fun(*this, &PuzzleMaker::on_configure_changed), false);
 
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
@@ -40,8 +45,38 @@ void PuzzleMaker::on_button_clicked()
 
   // Load and resize raw image
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
+
+  // Store raw image for further processing
+  gray_img = utils::pixbuf_to_gray_mat(raw_pixbuf);
+  rgba_img = utils::pixbuf_to_rgba_mat(raw_pixbuf);
+
+  // Resize image
   int window_width = get_width();
   auto pixbuf = utils::resize_pixbuf(raw_pixbuf, window_width, window_width);
   // Set image
   m_image.set(pixbuf);
+}
+
+bool PuzzleMaker::on_configure_changed(GdkEventConfigure* configure_event)
+{
+  printf("width: %d  -- height %d -- type %d\n",
+         configure_event->width,
+         configure_event->height,
+         configure_event->send_event);
+  if (configure_event->width != width || configure_event->height != height) {
+    on_resize(configure_event->width, configure_event->height);
+  }
+  return false;
+}
+
+void PuzzleMaker::on_resize(int new_width, int new_height)
+{
+  width = new_width;
+  height = new_height;
+
+  auto current_pixbuf = m_image.get_pixbuf();
+  if (current_pixbuf) {
+    printf("COUCOU\n");
+    m_image.set(utils::resize_pixbuf(current_pixbuf, width, width));
+  }
 }
