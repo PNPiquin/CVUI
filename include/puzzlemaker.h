@@ -11,6 +11,7 @@
 #include <gtkmm/window.h>
 #include <string>
 
+#include "utils/context.h"
 #include "utils/matrix.h"
 
 class PuzzleMaker : public Gtk::Window
@@ -23,6 +24,7 @@ public:
 protected:
   // Signal handlers:
   void on_button_clicked();
+  void on_kmeans_button_clicked();
   bool on_configure_changed(GdkEventConfigure* configure_event);
 
   // Layout
@@ -30,6 +32,7 @@ protected:
 
   // Member widgets:
   Gtk::Button m_button;
+  Gtk::Button m_kmeans_button;
   Gtk::Entry m_input_path_entry;
 
   // Image management
@@ -47,10 +50,11 @@ private:
   std::string input_path;
 
   void on_resize(int new_width, int new_height);
+  std::string get_current_filename();
 
   // Image
-  Matrix<uint8_t> gray_img;
-  Matrix<uint32_t> rgba_img;
+  GrayContext gray_context;
+  RGBAContext rgba_context;
 };
 
 #endif
