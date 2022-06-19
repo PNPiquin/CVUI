@@ -11,7 +11,6 @@
 #include <gtkmm/window.h>
 #include <string>
 
-
 #include "utils/matrix.h"
 
 class PuzzleMaker : public Gtk::Window
@@ -34,12 +33,15 @@ protected:
   Gtk::Entry m_input_path_entry;
 
   // Image management
+  Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf;
   Gtk::Image m_image;
 
 private:
   // Window size
   int width;
   int height;
+  int max_width;
+  int max_height;
 
   // entry text
   std::string input_path;
