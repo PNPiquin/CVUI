@@ -1,6 +1,7 @@
 #ifndef PUZZLEMAKER_H
 #define PUZZLEMAKER_H
 
+#include <atomic>
 #include <cstdlib>
 #include <gdkmm/pixbuf.h>
 #include <gtkmm.h>
@@ -10,6 +11,7 @@
 #include <gtkmm/image.h>
 #include <gtkmm/window.h>
 #include <string>
+
 
 #include "utils/context.h"
 #include "utils/matrix.h"
@@ -46,15 +48,21 @@ private:
   int max_width;
   int max_height;
 
+  // thread management
+  std::atomic<bool> is_processing;
+
   // entry text
   std::string input_path;
-
-  void on_resize(int new_width, int new_height);
-  std::string get_current_filename();
 
   // Image
   GrayContext gray_context;
   RGBAContext rgba_context;
+
+  void on_resize(int new_width, int new_height);
+  std::string get_current_filename();
+
+  // Image processing threads
+  void process_kmeans();
 };
 
 #endif

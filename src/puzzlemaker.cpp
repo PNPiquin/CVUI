@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
+#include <thread>
 
 static const int MARGIN = 10;
 
@@ -13,6 +14,7 @@ PuzzleMaker::PuzzleMaker()
   , m_input_path_entry()
   , raw_pixbuf()
   , m_image()
+  , is_processing(false)
 {
   // Init private attributes
   width = 600;
@@ -66,12 +68,23 @@ void PuzzleMaker::on_button_clicked()
 
 void PuzzleMaker::on_kmeans_button_clicked()
 {
-  printf("Process KMEANS");
+  if (!is_processing) {
+    std::thread kmeans_thread(&PuzzleMaker::process_kmeans, this);
+    kmeans_thread.detach();
+  }
+}
+
+void PuzzleMaker::process_kmeans()
+{
+  is_processing = true;
+
   std::string filename = get_current_filename();
   filename = filename + "_gray";
   gray_context.process_kmeans(filename);
   gray_context.save_image(filename);
   gray_context.save_image(filename + "_kmeans");
+
+  is_processing = false;
 }
 
 bool PuzzleMaker::on_configure_changed(GdkEventConfigure* configure_event)
