@@ -41,6 +41,16 @@ public:
   // Access the individual elements
   T& operator()(const unsigned& row, const unsigned& col);
   const T& operator()(const unsigned& row, const unsigned& col) const;
+  bool is_inside(const int& row, const int& col)
+  {
+    if (row < 0 || col < 0) {
+      return false;
+    }
+    if (row >= int(this->rows) || col >= int(this->cols)) {
+      return false;
+    }
+    return true;
+  };
 
   // Access the row and column sizes
   unsigned get_rows() const;

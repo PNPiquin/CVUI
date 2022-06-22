@@ -9,6 +9,7 @@ class GrayContext : public Context<uint8_t>
 {
 public:
   void process_kmeans(std::string img_name);
+  void generate_border_image(std::string img_name);
   void save_image(std::string img_name);
 };
 

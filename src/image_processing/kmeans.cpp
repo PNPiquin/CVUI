@@ -32,7 +32,7 @@ void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_pt
   // Initialization of cluster centers
   init(img, 0, rows - 1, 0, cols - 1);
 
-  int max_iter(5), iter(0);
+  int max_iter(2), iter(0);
   double epsilon(1.0), prev_value(0.0);
   double total_value = -epsilon - 1.0;
   while (std::abs(total_value - prev_value) > epsilon && iter < max_iter) {

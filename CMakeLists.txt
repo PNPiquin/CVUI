@@ -24,7 +24,7 @@ file(GLOB SOURCES_IMAGE_PROCESSING "src/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_IMAGE_PROCESSING})
 
 # Compiler flag
-set(GCC_COMPILE_FLAGS "--std=gnu++17 -O2 -Wall -pedantic")
+set(GCC_COMPILE_FLAGS "--std=gnu++17 -O3 -Wall -pedantic")
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
 
 add_executable(PuzzleMaker ${SOURCES})

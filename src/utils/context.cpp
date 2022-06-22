@@ -1,9 +1,13 @@
 #include "utils/context.h"
 #include "utils/lodepng.h"
 
+#include "image_processing/border.h"
 #include "image_processing/kmeans.h"
 #include <vector>
 
+// --------------------------------------------------------------------------------------------------------------------
+//                                    GRAY CONTEXT
+// --------------------------------------------------------------------------------------------------------------------
 void GrayContext::process_kmeans(std::string img_name)
 {
   auto gray_img = get_image(img_name);
@@ -15,10 +19,22 @@ void GrayContext::process_kmeans(std::string img_name)
   // Initialize output image
   auto img_out = std::make_shared<Matrix<uint8_t>>(gray_img->get_rows(), gray_img->get_cols());
 
-  KMeans kmeans(50);
+  KMeans kmeans(75);
   kmeans.process_kmeans(gray_img, img_out);
 
   add_image(img_name + "_kmeans", img_out);
+}
+
+void GrayContext::generate_border_image(std::string img_name)
+{
+  auto gray_img = get_image(img_name);
+  if (!gray_img) {
+    // No image, no-op
+    return;
+  }
+
+  auto border_img = ip::get_borders(gray_img);
+  add_image(img_name + "_borders", border_img);
 }
 
 void GrayContext::save_image(std::string img_name)
@@ -46,6 +62,9 @@ void GrayContext::save_image(std::string img_name)
   lodepng::encode(img_name + ".png", png_data, gray_img->get_cols(), gray_img->get_rows());
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+//                                    RGBA CONTEXT
+// --------------------------------------------------------------------------------------------------------------------
 void RGBAContext::save_image(std::string img_name)
 {
   auto rgba_img = get_image(img_name);

@@ -80,9 +80,14 @@ void PuzzleMaker::process_kmeans()
 
   std::string filename = get_current_filename();
   filename = filename + "_gray";
+
+  // generate kmeans image
   gray_context.process_kmeans(filename);
-  gray_context.save_image(filename);
   gray_context.save_image(filename + "_kmeans");
+
+  // generate border image
+  gray_context.generate_border_image(filename + "_kmeans");
+  gray_context.save_image(filename + "_kmeans" + "_borders");
 
   is_processing = false;
 }
@@ -111,6 +116,5 @@ std::string PuzzleMaker::get_current_filename()
 {
   // Extract image path
   input_path = m_input_path_entry.get_buffer()->get_text();
-  std::cout << "Load file: " << input_path << std::endl;
-  return std::filesystem::path(input_path).filename().string();
+  return std::filesystem::path(input_path).stem().string();
 }
