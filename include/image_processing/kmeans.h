@@ -20,7 +20,7 @@ public:
     SVD     // square value diff
   };
 
-  KMeans(int k = 2, K_MEANS_DISTANCE distance_method = EUCLIDIAN_DISTANCE);
+  KMeans(int k = 2, K_MEANS_DISTANCE distance_method = EUCLIDIAN_DISTANCE, int max_steps = 25);
   void process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_ptr<Matrix<uint8_t>> img_out);
 
   struct Pixel
@@ -52,6 +52,7 @@ public:
 
 private:
   int number_of_clusters;
+  int max_steps;
 
   struct Cluster
   {

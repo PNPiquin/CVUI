@@ -1,8 +1,9 @@
 #include "image_processing/kmeans.h"
 #include <random>
 
-KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method)
+KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
   : number_of_clusters(k)
+  , max_steps(max_steps)
 {
   for (int i = 0; i < number_of_clusters; ++i) {
     clusters.insert(std::pair<int, Cluster>(i, Cluster()));
@@ -32,10 +33,10 @@ void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_pt
   // Initialization of cluster centers
   init(img, 0, rows - 1, 0, cols - 1);
 
-  int max_iter(2), iter(0);
+  int iter(0);
   double epsilon(1.0), prev_value(0.0);
   double total_value = -epsilon - 1.0;
-  while (std::abs(total_value - prev_value) > epsilon && iter < max_iter) {
+  while (std::abs(total_value - prev_value) > epsilon && iter < max_steps) {
     prev_value = total_value;
     ++iter;
     total_value = process_kmeans_step(img);

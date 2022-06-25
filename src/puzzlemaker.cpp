@@ -10,7 +10,7 @@ static const int MARGIN = 10;
 PuzzleMaker::PuzzleMaker()
   : m_grid()
   , m_button("Load")
-  , m_kmeans_button("Process Kmeans")
+  , m_kmeans_button("Process Framing")
   , m_input_path_entry()
   , raw_pixbuf()
   , m_image()
@@ -79,15 +79,22 @@ void PuzzleMaker::process_kmeans()
   is_processing = true;
 
   std::string filename = get_current_filename();
-  filename = filename + "_gray";
+  std::string gray_filename = filename + "_gray";
 
   // generate kmeans image
-  gray_context.process_kmeans(filename);
-  gray_context.save_image(filename + "_kmeans");
+  std::string framing_img_name = gray_filename + "_framing";
+  gray_context.generate_random_framing(gray_filename, framing_img_name);
+  gray_context.save_image(framing_img_name);
 
   // generate border image
-  gray_context.generate_border_image(filename + "_kmeans");
-  gray_context.save_image(filename + "_kmeans" + "_borders");
+  std::string border_img_name = framing_img_name + "_borders";
+  gray_context.generate_border_image(framing_img_name, border_img_name);
+  gray_context.save_image(border_img_name);
+
+  // apply on RGBA picture
+  std::string rgba_with_framing_img_name = filename + "_framing_overlay";
+  rgba_context.apply_framing(filename, gray_context.get_image(border_img_name), rgba_with_framing_img_name);
+  rgba_context.save_image(rgba_with_framing_img_name);
 
   is_processing = false;
 }
@@ -109,6 +116,7 @@ void PuzzleMaker::on_resize(int new_width, int new_height)
   if (raw_pixbuf) {
     m_image.set(
       utils::resize_pixbuf(raw_pixbuf, image_target_width, max_width - 2 * MARGIN, max_height - 2 * MARGIN - 100));
+    m_image.set_size_request(50, 50);
   }
 }
 
