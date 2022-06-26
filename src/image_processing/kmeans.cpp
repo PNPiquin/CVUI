@@ -4,6 +4,7 @@
 KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
   : number_of_clusters(k)
   , max_steps(max_steps)
+  , is_initialized(false)
 {
   for (int i = 0; i < number_of_clusters; ++i) {
     clusters.insert(std::pair<int, Cluster>(i, Cluster()));
@@ -31,7 +32,9 @@ void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_pt
   int cols = img->get_cols();
 
   // Initialization of cluster centers
-  init(img, 0, rows - 1, 0, cols - 1);
+  if (!is_initialized) {
+    init(img, 0, rows - 1, 0, cols - 1);
+  }
 
   int iter(0);
   double epsilon(1.0), prev_value(0.0);
@@ -53,6 +56,24 @@ void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_pt
   }
 }
 
+void KMeans::set_seeds(std::vector<Pixel> seeds)
+{
+  if (int(seeds.size()) != number_of_clusters) {
+    number_of_clusters = int(seeds.size());
+    for (int i = 0; i < number_of_clusters; ++i) {
+      clusters.insert(std::pair<int, Cluster>(i, Cluster()));
+    }
+  }
+
+  for (int i = 0; i < number_of_clusters; ++i) {
+    const auto seed = seeds[i];
+    clusters.at(i).cluster_center.set_coord(seed.x, seed.y);
+    clusters.at(i).cluster_center.set_value(seed.value);
+  }
+
+  is_initialized = true;
+}
+
 void KMeans::init(std::shared_ptr<Matrix<uint8_t>> img, int x_min, int x_max, int y_min, int y_max)
 {
   std::default_random_engine x_generator, y_generator;
@@ -64,6 +85,8 @@ void KMeans::init(std::shared_ptr<Matrix<uint8_t>> img, int x_min, int x_max, in
     clusters.at(i).cluster_center.set_coord(x_gen(), y_gen());
     clusters.at(i).cluster_center.update_values(img);
   }
+
+  is_initialized = true;
 }
 
 double KMeans::process_kmeans_step(std::shared_ptr<Matrix<uint8_t>> img)

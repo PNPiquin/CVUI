@@ -2,6 +2,7 @@
 #include "utils/lodepng.h"
 
 #include "image_processing/border.h"
+#include "image_processing/framing.h"
 #include "image_processing/kmeans.h"
 #include "image_processing/segmentation.h"
 #include <vector>
@@ -45,6 +46,26 @@ void GrayContext::generate_random_framing(std::string img_name, std::string outp
   }
 
   auto img_out = ip::get_random_framing(gray_img, 120);
+
+  add_image(output_name, img_out);
+}
+
+void GrayContext::generate_grid_framing(std::string img_name)
+{
+  generate_grid_framing(img_name, img_name + "_grid_framing");
+}
+
+void GrayContext::generate_grid_framing(std::string img_name, std::string output_name)
+{
+  auto gray_img = get_image(img_name);
+  if (!gray_img) {
+    // No image, no-op
+    return;
+  }
+
+  FramingConfiguration config = { 10, 12, true, 90, 75 };
+  FramingService framing_service(config);
+  auto img_out = framing_service.create_zones(gray_img);
 
   add_image(output_name, img_out);
 }

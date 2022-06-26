@@ -14,6 +14,9 @@ public:
   void generate_random_framing(std::string img_name);
   void generate_random_framing(std::string img_name, std::string output_name);
 
+  void generate_grid_framing(std::string img_name);
+  void generate_grid_framing(std::string img_name, std::string output_name);
+
   void generate_border_image(std::string img_name);
   void generate_border_image(std::string img_name, std::string output_name);
 

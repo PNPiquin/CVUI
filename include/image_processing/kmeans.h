@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "image_processing/base.h"
 #include "utils/matrix.h"
 
 class KMeans
@@ -23,36 +24,12 @@ public:
   KMeans(int k = 2, K_MEANS_DISTANCE distance_method = EUCLIDIAN_DISTANCE, int max_steps = 25);
   void process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_ptr<Matrix<uint8_t>> img_out);
 
-  struct Pixel
-  {
-    int x;
-    int y;
-    int value;
-    Pixel()
-    {
-      x = 0;
-      y = 0;
-      value = 0;
-    }
-
-    Pixel(int i, int j, int v)
-    {
-      x = i;
-      y = j;
-      value = v;
-    }
-
-    void set_coord(int xx, int yy)
-    {
-      x = xx;
-      y = yy;
-    }
-    void update_values(std::shared_ptr<Matrix<uint8_t>> img) { value = img->operator()(x, y); }
-  };
+  void set_seeds(std::vector<Pixel> seeds);
 
 private:
   int number_of_clusters;
   int max_steps;
+  bool is_initialized;
 
   struct Cluster
   {

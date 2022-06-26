@@ -83,7 +83,8 @@ void PuzzleMaker::process_kmeans()
 
   // generate kmeans image
   std::string framing_img_name = gray_filename + "_framing";
-  gray_context.generate_random_framing(gray_filename, framing_img_name);
+  // gray_context.generate_random_framing(gray_filename, framing_img_name);
+  gray_context.generate_grid_framing(gray_filename, framing_img_name);
   gray_context.save_image(framing_img_name);
 
   // generate border image
@@ -95,6 +96,8 @@ void PuzzleMaker::process_kmeans()
   std::string rgba_with_framing_img_name = filename + "_framing_overlay";
   rgba_context.apply_framing(filename, gray_context.get_image(border_img_name), rgba_with_framing_img_name);
   rgba_context.save_image(rgba_with_framing_img_name);
+
+  printf("DONE\n");
 
   is_processing = false;
 }
