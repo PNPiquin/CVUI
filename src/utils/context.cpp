@@ -1,10 +1,10 @@
 #include "utils/context.h"
 #include "utils/lodepng.h"
 
-#include "image_processing/border.h"
 #include "image_processing/framing.h"
 #include "image_processing/kmeans.h"
 #include "image_processing/segmentation.h"
+#include "image_processing/zone_utils.h"
 #include <vector>
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -153,6 +153,11 @@ void RGBAContext::save_image(std::string img_name)
     return;
   }
 
+  save_image(rgba_img, img_name + ".png");
+}
+
+void RGBAContext::save_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath)
+{
   size_t img_width = rgba_img->get_cols();
   size_t img_height = rgba_img->get_rows();
   std::vector<uint8_t> png_data;
@@ -167,5 +172,5 @@ void RGBAContext::save_image(std::string img_name)
     }
   }
 
-  lodepng::encode(img_name + ".png", png_data, rgba_img->get_cols(), rgba_img->get_rows());
+  lodepng::encode(filepath, png_data, rgba_img->get_cols(), rgba_img->get_rows());
 }

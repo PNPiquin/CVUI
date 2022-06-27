@@ -30,6 +30,7 @@ public:
   void apply_framing(std::string img_name, std::shared_ptr<Matrix<uint8_t>> framing, std::string output_name);
 
   void save_image(std::string img_name);
+  static void save_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath);
 };
 
 #endif

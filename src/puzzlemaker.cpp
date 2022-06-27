@@ -5,6 +5,8 @@
 #include <memory>
 #include <thread>
 
+#include "image_processing/zone_utils.h"
+
 static const int MARGIN = 10;
 
 PuzzleMaker::PuzzleMaker()
@@ -96,6 +98,15 @@ void PuzzleMaker::process_kmeans()
   std::string rgba_with_framing_img_name = filename + "_framing_overlay";
   rgba_context.apply_framing(filename, gray_context.get_image(border_img_name), rgba_with_framing_img_name);
   rgba_context.save_image(rgba_with_framing_img_name);
+
+  // extract images
+  auto sub_images =
+    ip::extract_zone_images(rgba_context.get_image(filename), gray_context.get_image(framing_img_name), 120);
+  int i = 0;
+  for (const auto& sub_img : sub_images) {
+    RGBAContext::save_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
+    ++i;
+  }
 
   printf("DONE\n");
 
