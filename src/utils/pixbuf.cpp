@@ -11,7 +11,7 @@ Glib::RefPtr<Gdk::Pixbuf> resize_pixbuf(Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf,
     float ratio = target_width / float(raw_pixbuf->get_width());
     int final_target_width = std::min(target_width, max_width);
     int final_target_height = std::min(int(raw_pixbuf->get_height() * ratio), max_height);
-    resized_pixbuf = raw_pixbuf->scale_simple(final_target_width, final_target_height, Gdk::InterpType::INTERP_NEAREST);
+    resized_pixbuf = raw_pixbuf->scale_simple(final_target_width, final_target_height, Gdk::InterpType::NEAREST);
   }
   return resized_pixbuf;
 }
@@ -57,7 +57,7 @@ Glib::RefPtr<Gdk::Pixbuf> gray_mat_to_pixbuf(Matrix<uint8_t> gray_mat)
     }
   }
   return Gdk::Pixbuf::create_from_data(data,
-                                       Gdk::Colorspace::COLORSPACE_RGB,
+                                       Gdk::Colorspace::RGB,
                                        false,
                                        8,
                                        gray_mat.get_cols(),
@@ -78,7 +78,7 @@ Glib::RefPtr<Gdk::Pixbuf> rgba_mat_to_pixbuf(Matrix<uint32_t> rgba_mat)
     }
   }
   return Gdk::Pixbuf::create_from_data(data,
-                                       Gdk::Colorspace::COLORSPACE_RGB,
+                                       Gdk::Colorspace::RGB,
                                        true,
                                        8,
                                        rgba_mat.get_cols(),

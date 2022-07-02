@@ -8,10 +8,9 @@
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/grid.h>
-#include <gtkmm/image.h>
+#include <gtkmm/picture.h>
 #include <gtkmm/window.h>
 #include <string>
-
 
 #include "utils/context.h"
 #include "utils/matrix.h"
@@ -27,7 +26,7 @@ protected:
   // Signal handlers:
   void on_button_clicked();
   void on_kmeans_button_clicked();
-  bool on_configure_changed(GdkEventConfigure* configure_event);
+  // bool on_configure_changed(GdkEventConfigure* configure_event);
 
   // Layout
   Gtk::Grid m_grid;
@@ -39,7 +38,7 @@ protected:
 
   // Image management
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf;
-  Gtk::Image m_image;
+  Gtk::Picture m_image;
 
 private:
   // Window size
@@ -57,6 +56,8 @@ private:
   // Image
   GrayContext gray_context;
   RGBAContext rgba_context;
+
+  void init_monitor_size();
 
   void on_resize(int new_width, int new_height);
   std::string get_current_filename();

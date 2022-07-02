@@ -5,7 +5,7 @@ set(CMAKE_BUILD_TYPE "RELEASE")
 find_package(PkgConfig)
 
 # GTKMM setup
-pkg_check_modules(GTKMM gtkmm-3.0)
+pkg_check_modules(GTKMM gtkmm-4.0)
 link_directories(${GTKMM_LIBRARY_DIRS})
 include_directories(${GTKMM_INCLUDE_DIRS})
 

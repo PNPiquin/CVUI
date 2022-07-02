@@ -3,10 +3,10 @@
 
 int main(int argc, char* argv[])
 {
-  auto app = Gtk::Application::create(argc, argv, "com.pnp.puzzlemaker");
+  auto app = Gtk::Application::create("com.pnp.puzzlemaker");
 
   PuzzleMaker puzzlemaker;
 
   // Shows the window and returns when it is closed.
-  return app->run(puzzlemaker);
+  return app->make_window_and_run<PuzzleMaker>(argc, argv);
 }
