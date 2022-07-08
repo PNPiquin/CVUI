@@ -24,23 +24,22 @@ PuzzleMaker::PuzzleMaker()
   input_path = "";
 
   // Sets the border width of the window.
-  // set_margin(MARGIN);
   set_default_size(width, height);
-
-  // Configure configuration callbacks
-  // signal_configure_event().connect(sigc::mem_fun(*this, &PuzzleMaker::on_configure_changed), false);
 
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
   m_button.signal_clicked().connect(sigc::mem_fun(*this, &PuzzleMaker::on_button_clicked));
   m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &PuzzleMaker::on_kmeans_button_clicked));
 
+  // Build property tree
+  build_property_tree();
+
   // This packs the button into the Window (a container).
-  m_grid.attach(m_input_path_entry, 0, 0, 3, 1);
-  m_grid.attach(m_button, 3, 0, 1, 1);
-  m_grid.attach(m_kmeans_button, 4, 0, 1, 1);
-  m_grid.attach(m_image, 0, 1, 5, 5);
-  // m_grid.show_all();
+  m_grid.attach(m_input_path_entry, 1, 0, 3, 1);
+  m_grid.attach(m_button, 4, 0, 1, 1);
+  m_grid.attach(m_kmeans_button, 5, 0, 1, 1);
+  m_grid.attach(m_image, 1, 1, 5, 5);
+  m_grid.attach(properties_box, 0, 0, 1, 6);
   set_child(m_grid);
 
   // The final step is to display this newly created widget...
@@ -58,6 +57,15 @@ void PuzzleMaker::init_monitor_size()
   monitor->get_geometry(monitor_rect);
   max_width = monitor_rect.get_width();
   max_height = monitor_rect.get_height();
+}
+
+void PuzzleMaker::build_property_tree()
+{
+  // PuzzleMaker properties
+  std::shared_ptr<PropertyManager> puzzle_maker_properties = std::make_shared<PropertyManager>(PUZZLEMAKER);
+  property_managers.insert({ PUZZLEMAKER, puzzle_maker_properties });
+  puzzle_maker_properties->add_boolean_property("Test toggle", true);
+  properties_box.append(puzzle_maker_properties->get_widget());
 }
 
 void PuzzleMaker::on_button_clicked()

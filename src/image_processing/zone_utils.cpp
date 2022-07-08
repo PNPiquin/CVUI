@@ -47,10 +47,10 @@ std::vector<std::shared_ptr<Matrix<uint32_t>>> extract_zone_images(std::shared_p
     zone_values.push_back(index * color_inc);
   }
 
-  const int rows = rgba_img->get_rows();
-  const int cols = rgba_img->get_cols();
+  const size_t rows = rgba_img->get_rows();
+  const size_t cols = rgba_img->get_cols();
   for (const auto& value : zone_values) {
-    int row_min(rows), row_max(0), col_min(cols), col_max(0);
+    size_t row_min(rows), row_max(0), col_min(cols), col_max(0);
     // Get zone ROI
     for (size_t row = 0; row < rows; ++row) {
       for (size_t col = 0; col < cols; ++col) {
@@ -72,8 +72,8 @@ std::vector<std::shared_ptr<Matrix<uint32_t>>> extract_zone_images(std::shared_p
     }
 
     // Create a sub-image with zone
-    const int sub_rows = row_max - row_min;
-    const int sub_cols = col_max - col_min;
+    const size_t sub_rows = row_max - row_min;
+    const size_t sub_cols = col_max - col_min;
     auto sub_img = std::make_shared<Matrix<uint32_t>>(sub_rows, sub_cols);
     for (size_t row = 0; row < sub_rows; ++row) {
       for (size_t col = 0; col < sub_cols; ++col) {

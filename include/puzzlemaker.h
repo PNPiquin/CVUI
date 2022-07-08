@@ -5,12 +5,18 @@
 #include <cstdlib>
 #include <gdkmm/pixbuf.h>
 #include <gtkmm.h>
+#include <gtkmm/box.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/grid.h>
 #include <gtkmm/picture.h>
 #include <gtkmm/window.h>
+#include <map>
+#include <memory>
 #include <string>
+
+#include "ui/constants.h"
+#include "ui/property_manager.h"
 
 #include "utils/context.h"
 #include "utils/matrix.h"
@@ -30,11 +36,15 @@ protected:
 
   // Layout
   Gtk::Grid m_grid;
+  Gtk::Box properties_box;
 
   // Member widgets:
   Gtk::Button m_button;
   Gtk::Button m_kmeans_button;
   Gtk::Entry m_input_path_entry;
+
+  // Properties
+  std::map<std::string, std::shared_ptr<PropertyManager>> property_managers;
 
   // Image management
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf;
@@ -58,6 +68,7 @@ private:
   RGBAContext rgba_context;
 
   void init_monitor_size();
+  void build_property_tree();
 
   void on_resize(int new_width, int new_height);
   std::string get_current_filename();

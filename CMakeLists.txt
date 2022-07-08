@@ -13,6 +13,7 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 include_directories("include/")
 include_directories("include/utils/")
 include_directories("include/utils/image_processing/")
+include_directories("include/utils/ui/")
 
 # sources files
 file(GLOB SOURCES "src/*.cpp")
@@ -22,6 +23,9 @@ list(APPEND SOURCES ${SOURCES_UTILS})
 
 file(GLOB SOURCES_IMAGE_PROCESSING "src/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_IMAGE_PROCESSING})
+
+file(GLOB SOURCES_UI "src/ui/*.cpp")
+list(APPEND SOURCES ${SOURCES_UI})
 
 # Compiler flag
 set(GCC_COMPILE_FLAGS "--std=gnu++17 -O3 -Wall -pedantic")
