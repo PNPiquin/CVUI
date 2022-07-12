@@ -11,6 +11,7 @@ static const int MARGIN = 10;
 
 PuzzleMaker::PuzzleMaker()
   : m_grid()
+  , properties_box(Gtk::Orientation::VERTICAL)
   , m_button("Load")
   , m_kmeans_button("Process Framing")
   , m_input_path_entry()
@@ -65,6 +66,9 @@ void PuzzleMaker::build_property_tree()
   std::shared_ptr<PropertyManager> puzzle_maker_properties = std::make_shared<PropertyManager>(PUZZLEMAKER);
   property_managers.insert({ PUZZLEMAKER, puzzle_maker_properties });
   puzzle_maker_properties->add_boolean_property("Test toggle", true);
+  puzzle_maker_properties->add_integer_property("Test spin button", 2);
+  puzzle_maker_properties->add_double_property("Test double spin button", 42.3);
+  puzzle_maker_properties->add_string_property("Test entry", "Entry test");
   properties_box.append(puzzle_maker_properties->get_widget());
 }
 
