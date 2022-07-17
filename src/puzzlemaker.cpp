@@ -45,6 +45,11 @@ PuzzleMaker::PuzzleMaker()
 
   // The final step is to display this newly created widget...
   m_button.show();
+
+  // Set fullscreen
+  maximize();
+  width = max_width;
+  height = max_height;
 }
 
 PuzzleMaker::~PuzzleMaker() {}
