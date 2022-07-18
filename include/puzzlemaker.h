@@ -8,7 +8,6 @@
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/grid.h>
 #include <gtkmm/picture.h>
 #include <gtkmm/window.h>
 #include <map>
@@ -32,11 +31,13 @@ protected:
   // Signal handlers:
   void on_button_clicked();
   void on_kmeans_button_clicked();
-  // bool on_configure_changed(GdkEventConfigure* configure_event);
 
   // Layout
-  Gtk::Grid m_grid;
   Gtk::Box properties_box;
+
+  // Layout V2
+  Gtk::Box main_box, entry_box;
+  Gtk::Paned m_paned;
 
   // Member widgets:
   Gtk::Button m_button;
@@ -70,7 +71,6 @@ private:
   void init_monitor_size();
   void build_property_tree();
 
-  void on_resize(int new_width, int new_height);
   std::string get_current_filename();
 
   // Image processing threads

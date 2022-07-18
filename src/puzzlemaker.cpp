@@ -10,8 +10,10 @@
 static const int MARGIN = 10;
 
 PuzzleMaker::PuzzleMaker()
-  : m_grid()
-  , properties_box(Gtk::Orientation::VERTICAL)
+  : properties_box(Gtk::Orientation::VERTICAL)
+  , main_box(Gtk::Orientation::VERTICAL)
+  , entry_box(Gtk::Orientation::HORIZONTAL)
+  , m_paned(Gtk::Orientation::HORIZONTAL)
   , m_button("Load")
   , m_kmeans_button("Process Framing")
   , m_input_path_entry()
@@ -20,12 +22,7 @@ PuzzleMaker::PuzzleMaker()
   , is_processing(false)
 {
   // Init private attributes
-  width = 600;
-  height = 200;
   input_path = "";
-
-  // Sets the border width of the window.
-  set_default_size(width, height);
 
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
@@ -35,16 +32,22 @@ PuzzleMaker::PuzzleMaker()
   // Build property tree
   build_property_tree();
 
-  // This packs the button into the Window (a container).
-  m_grid.attach(m_input_path_entry, 1, 0, 3, 1);
-  m_grid.attach(m_button, 4, 0, 1, 1);
-  m_grid.attach(m_kmeans_button, 5, 0, 1, 1);
-  m_grid.attach(m_image, 1, 1, 5, 5);
-  m_grid.attach(properties_box, 0, 0, 1, 6);
-  set_child(m_grid);
+  // Layout V2: a main vertical box with 2 children:
+  //     - an horizontal box with all image entry/selection
+  //     - a Gtk::Paned to display both the image and the properties
+  // Build the entry box
+  entry_box.append(m_input_path_entry);
+  entry_box.append(m_button);
+  entry_box.append(m_kmeans_button);
 
-  // The final step is to display this newly created widget...
-  m_button.show();
+  // Build the Gtk::Paned
+  m_paned.set_start_child(properties_box);
+  m_paned.set_end_child(m_image);
+
+  // Append to main layout
+  main_box.append(entry_box);
+  main_box.append(m_paned);
+  set_child(main_box);
 
   // Set fullscreen
   maximize();
@@ -144,27 +147,6 @@ void PuzzleMaker::process_kmeans()
   printf("DONE\n");
 
   is_processing = false;
-}
-
-// bool PuzzleMaker::on_configure_changed(GdkEventConfigure* configure_event)
-// {
-//   if (configure_event->width != width || configure_event->height != height) {
-//     on_resize(configure_event->width, configure_event->height);
-//   }
-//   return false;
-// }
-
-void PuzzleMaker::on_resize(int new_width, int new_height)
-{
-  width = new_width;
-  height = new_height;
-  int image_target_width = width - 2 * MARGIN;
-
-  if (raw_pixbuf) {
-    m_image.set_pixbuf(
-      utils::resize_pixbuf(raw_pixbuf, image_target_width, max_width - 2 * MARGIN, max_height - 2 * MARGIN - 100));
-    m_image.set_size_request(50, 50);
-  }
 }
 
 std::string PuzzleMaker::get_current_filename()
