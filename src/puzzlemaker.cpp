@@ -42,6 +42,7 @@ PuzzleMaker::PuzzleMaker()
 
   // Build the Gtk::Paned
   m_paned.set_start_child(properties_box);
+  m_image.set_size_request(800, -1);
   m_paned.set_end_child(m_image);
 
   // Append to main layout
