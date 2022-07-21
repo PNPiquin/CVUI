@@ -13,6 +13,7 @@ include_directories(${GTKMM_INCLUDE_DIRS})
 include_directories("include/")
 include_directories("include/utils/")
 include_directories("include/utils/image_processing/")
+include_directories("include/utils/pipeline/")
 include_directories("include/utils/ui/")
 
 # sources files
@@ -23,6 +24,9 @@ list(APPEND SOURCES ${SOURCES_UTILS})
 
 file(GLOB SOURCES_IMAGE_PROCESSING "src/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_IMAGE_PROCESSING})
+
+file(GLOB SOURCES_PIPELINE "src/pipeline/*.cpp")
+list(APPEND SOURCES ${SOURCES_PIPELINE})
 
 file(GLOB SOURCES_UI "src/ui/*.cpp")
 list(APPEND SOURCES ${SOURCES_UI})
