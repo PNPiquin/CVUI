@@ -69,16 +69,29 @@ void PuzzleMaker::init_monitor_size()
   max_height = monitor_rect.get_height();
 }
 
+void PuzzleMaker::register_processor(std::string processor_display_name, Configuration config)
+{
+  std::shared_ptr<PropertyManager> processor_properties = std::make_shared<PropertyManager>(processor_display_name);
+  property_managers.insert({ PUZZLEMAKER, processor_properties });
+  for (const auto& boolean_property_name : config.get_boolean_properties_names()) {
+    processor_properties->add_boolean_property(boolean_property_name, config.get_bool(boolean_property_name));
+  }
+  for (const auto& integer_property_name : config.get_integer_properties_names()) {
+    processor_properties->add_integer_property(integer_property_name, config.get_int(integer_property_name));
+  }
+  for (const auto& double_property_name : config.get_double_properties_names()) {
+    processor_properties->add_double_property(double_property_name, config.get_double(double_property_name));
+  }
+  for (const auto& string_property_name : config.get_string_properties_names()) {
+    processor_properties->add_string_property(string_property_name, config.get_string(string_property_name));
+  }
+  properties_box.append(processor_properties->get_widget());
+}
+
 void PuzzleMaker::build_property_tree()
 {
-  // PuzzleMaker properties
-  std::shared_ptr<PropertyManager> puzzle_maker_properties = std::make_shared<PropertyManager>(PUZZLEMAKER);
-  property_managers.insert({ PUZZLEMAKER, puzzle_maker_properties });
-  puzzle_maker_properties->add_boolean_property("Test toggle", true);
-  puzzle_maker_properties->add_integer_property("Test spin button", 2);
-  puzzle_maker_properties->add_double_property("Test double spin button", 42.3);
-  puzzle_maker_properties->add_string_property("Test entry", "Entry test");
-  properties_box.append(puzzle_maker_properties->get_widget());
+  register_processor("Framing", framing_processor.get_config());
+  register_processor("Border creation", border_processor.get_config());
 }
 
 void PuzzleMaker::on_button_clicked()
@@ -90,8 +103,8 @@ void PuzzleMaker::on_button_clicked()
   raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
 
   // Store raw image for further processing
-  gray_context.add_image(filename + "_gray", std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
-  rgba_context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
+  context.add_gray_image(filename + "_gray", std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
+  context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
 
   // Set image
   m_image.set_pixbuf(raw_pixbuf);
@@ -122,26 +135,24 @@ void PuzzleMaker::process_kmeans()
 
   // generate kmeans image
   std::string framing_img_name = gray_filename + "_framing";
-  // gray_context.generate_random_framing(gray_filename, framing_img_name);
-  gray_context.generate_grid_framing(gray_filename, framing_img_name);
-  gray_context.save_image(framing_img_name);
+  framing_processor.process(context, gray_filename, framing_img_name);
+  context.save_gray_image(framing_img_name);
 
   // generate border image
   std::string border_img_name = framing_img_name + "_borders";
-  gray_context.generate_border_image(framing_img_name, border_img_name);
-  gray_context.save_image(border_img_name);
+  border_processor.process(context, framing_img_name, border_img_name);
+  context.save_gray_image(border_img_name);
 
   // apply on RGBA picture
   std::string rgba_with_framing_img_name = filename + "_framing_overlay";
-  rgba_context.apply_framing(filename, gray_context.get_image(border_img_name), rgba_with_framing_img_name);
-  rgba_context.save_image(rgba_with_framing_img_name);
+  framing_processor.apply_framing(context, filename, border_img_name, rgba_with_framing_img_name);
+  context.save_image(rgba_with_framing_img_name);
 
   // extract images
-  auto sub_images =
-    ip::extract_zone_images(rgba_context.get_image(filename), gray_context.get_image(framing_img_name), 120);
+  auto sub_images = ip::extract_zone_images(context.get_image(filename), context.get_gray_image(framing_img_name), 120);
   int i = 0;
   for (const auto& sub_img : sub_images) {
-    RGBAContext::save_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
+    Context::save_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
     ++i;
   }
 

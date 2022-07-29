@@ -85,3 +85,35 @@ std::string Configuration::get_string(std::string property_name)
 
   return it->second;
 }
+
+std::vector<std::string> Configuration::get_boolean_properties_names(){
+  std::vector<std::string> boolean_properties_names;
+  for (auto it = boolean_properties.begin(); it != boolean_properties.end(); ++it){
+    boolean_properties_names.push_back(it->first);
+  }
+  return boolean_properties_names;
+}
+
+std::vector<std::string> Configuration::get_integer_properties_names(){
+  std::vector<std::string> integer_properties_names;
+  for (auto it = integer_properties.begin(); it != integer_properties.end(); ++it){
+    integer_properties_names.push_back(it->first);
+  }
+  return integer_properties_names;
+}
+
+std::vector<std::string> Configuration::get_double_properties_names(){
+  std::vector<std::string> double_properties_names;
+  for (auto it = double_properties.begin(); it != double_properties.end(); ++it){
+    double_properties_names.push_back(it->first);
+  }
+  return double_properties_names;
+}
+
+std::vector<std::string> Configuration::get_string_properties_names(){
+  std::vector<std::string> string_properties_names;
+  for (auto it = string_properties.begin(); it != string_properties.end(); ++it){
+    string_properties_names.push_back(it->first);
+  }
+  return string_properties_names;
+}

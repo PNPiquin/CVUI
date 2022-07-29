@@ -14,10 +14,15 @@
 #include <memory>
 #include <string>
 
+#include "pipeline/configuration.h"
+#include "pipeline/context.h"
+#include "pipeline/image_processing/border_processor.h"
+#include "pipeline/image_processing/framing_processor.h"
+
+
 #include "ui/constants.h"
 #include "ui/property_manager.h"
 
-#include "utils/context.h"
 #include "utils/matrix.h"
 
 class PuzzleMaker : public Gtk::Window
@@ -65,8 +70,7 @@ private:
   std::string input_path;
 
   // Image
-  GrayContext gray_context;
-  RGBAContext rgba_context;
+  Context context;
 
   void init_monitor_size();
   void build_property_tree();
@@ -75,6 +79,13 @@ private:
 
   // Image processing threads
   void process_kmeans();
+
+  // Processors
+  FramingProcessor framing_processor;
+  BorderProcessor border_processor;
+
+  // Processor registration
+  void register_processor(std::string processor_display_name, Configuration config);
 };
 
 #endif
