@@ -3,7 +3,7 @@
 
 #include <string>
 
-// PuzzleMaker
-const std::string PUZZLEMAKER = "PuzzleMaker";
+// CVUI
+const std::string CVUI_APP_NAME = "CVUI";
 
 #endif

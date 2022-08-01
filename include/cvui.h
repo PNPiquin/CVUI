@@ -1,5 +1,5 @@
-#ifndef PUZZLEMAKER_H
-#define PUZZLEMAKER_H
+#ifndef CVUI_H
+#define CVUI_H
 
 #include <atomic>
 #include <cstdlib>
@@ -19,18 +19,17 @@
 #include "pipeline/image_processing/border_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
 
-
 #include "ui/constants.h"
 #include "ui/property_manager.h"
 
 #include "utils/matrix.h"
 
-class PuzzleMaker : public Gtk::Window
+class CVUI : public Gtk::Window
 {
 
 public:
-  PuzzleMaker();
-  virtual ~PuzzleMaker();
+  CVUI();
+  virtual ~CVUI();
 
 protected:
   // Signal handlers:

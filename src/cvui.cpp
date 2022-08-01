@@ -1,4 +1,4 @@
-#include "puzzlemaker.h"
+#include "cvui.h"
 #include "utils/pixbuf.h"
 #include <filesystem>
 #include <iostream>
@@ -9,7 +9,7 @@
 
 static const int MARGIN = 10;
 
-PuzzleMaker::PuzzleMaker()
+CVUI::CVUI()
   : properties_box(Gtk::Orientation::VERTICAL)
   , main_box(Gtk::Orientation::VERTICAL)
   , entry_box(Gtk::Orientation::HORIZONTAL)
@@ -26,8 +26,8 @@ PuzzleMaker::PuzzleMaker()
 
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
-  m_button.signal_clicked().connect(sigc::mem_fun(*this, &PuzzleMaker::on_button_clicked));
-  m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &PuzzleMaker::on_kmeans_button_clicked));
+  m_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_button_clicked));
+  m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_kmeans_button_clicked));
 
   // Build property tree
   build_property_tree();
@@ -56,9 +56,9 @@ PuzzleMaker::PuzzleMaker()
   height = max_height;
 }
 
-PuzzleMaker::~PuzzleMaker() {}
+CVUI::~CVUI() {}
 
-void PuzzleMaker::init_monitor_size()
+void CVUI::init_monitor_size()
 {
   // Get display size
   auto display = this->get_display();
@@ -69,10 +69,10 @@ void PuzzleMaker::init_monitor_size()
   max_height = monitor_rect.get_height();
 }
 
-void PuzzleMaker::register_processor(std::string processor_display_name, Configuration config)
+void CVUI::register_processor(std::string processor_display_name, Configuration config)
 {
   std::shared_ptr<PropertyManager> processor_properties = std::make_shared<PropertyManager>(processor_display_name);
-  property_managers.insert({ PUZZLEMAKER, processor_properties });
+  property_managers.insert({ processor_display_name, processor_properties });
   for (const auto& boolean_property_name : config.get_boolean_properties_names()) {
     processor_properties->add_boolean_property(boolean_property_name, config.get_bool(boolean_property_name));
   }
@@ -88,13 +88,13 @@ void PuzzleMaker::register_processor(std::string processor_display_name, Configu
   properties_box.append(processor_properties->get_widget());
 }
 
-void PuzzleMaker::build_property_tree()
+void CVUI::build_property_tree()
 {
   register_processor("Framing", framing_processor.get_config());
   register_processor("Border creation", border_processor.get_config());
 }
 
-void PuzzleMaker::on_button_clicked()
+void CVUI::on_button_clicked()
 {
   init_monitor_size();
 
@@ -118,15 +118,15 @@ void PuzzleMaker::on_button_clicked()
   m_image.set_size_request(target_width, target_height);
 }
 
-void PuzzleMaker::on_kmeans_button_clicked()
+void CVUI::on_kmeans_button_clicked()
 {
   if (!is_processing) {
-    std::thread kmeans_thread(&PuzzleMaker::process_kmeans, this);
+    std::thread kmeans_thread(&CVUI::process_kmeans, this);
     kmeans_thread.detach();
   }
 }
 
-void PuzzleMaker::process_kmeans()
+void CVUI::process_kmeans()
 {
   is_processing = true;
 
@@ -161,7 +161,7 @@ void PuzzleMaker::process_kmeans()
   is_processing = false;
 }
 
-std::string PuzzleMaker::get_current_filename()
+std::string CVUI::get_current_filename()
 {
   // Extract image path
   input_path = m_input_path_entry.get_buffer()->get_text();
