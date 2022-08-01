@@ -4,8 +4,10 @@
 #include <string>
 
 #include <gtkmm/adjustment.h>
+#include <gtkmm/box.h>
 #include <gtkmm/checkbutton.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/label.h>
 #include <gtkmm/spinbutton.h>
 
 enum PropertyType
@@ -40,11 +42,13 @@ public:
   int get_value();
   void set_value(int value);
 
-  Gtk::SpinButton& get_widget() { return spin_button; };
+  Gtk::Widget& get_widget() { return box; };
 
 private:
   Glib::RefPtr<Gtk::Adjustment> spin_button_adjustment;
   Gtk::SpinButton spin_button;
+  Gtk::Label property_label;
+  Gtk::Box box;
 };
 
 class DoubleProperty
@@ -56,11 +60,13 @@ public:
   double get_value();
   void set_value(double value);
 
-  Gtk::SpinButton& get_widget() { return spin_button; };
+  Gtk::Widget& get_widget() { return box; };
 
 private:
   Glib::RefPtr<Gtk::Adjustment> spin_button_adjustment;
   Gtk::SpinButton spin_button;
+  Gtk::Label property_label;
+  Gtk::Box box;
 };
 
 class StringProperty
@@ -72,10 +78,12 @@ public:
   std::string get_value();
   void set_value(std::string value);
 
-  Gtk::Entry& get_widget() { return entry; };
+  Gtk::Widget& get_widget() { return box; };
 
 private:
   Gtk::Entry entry;
+  Gtk::Label property_label;
+  Gtk::Box box;
 };
 
 #endif
