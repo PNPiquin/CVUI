@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.19)
-project(PuzzleMaker)
+project(CVUI)
 set(CMAKE_BUILD_TYPE "RELEASE")
 
 find_package(PkgConfig)
@@ -39,5 +39,5 @@ list(APPEND SOURCES ${SOURCES_UI})
 set(GCC_COMPILE_FLAGS "--std=gnu++17 -O3 -Wall -pedantic")
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
 
-add_executable(PuzzleMaker ${SOURCES})
-target_link_libraries(PuzzleMaker ${GTKMM_LIBRARIES})
+add_executable(CVUI ${SOURCES})
+target_link_libraries(CVUI ${GTKMM_LIBRARIES})
