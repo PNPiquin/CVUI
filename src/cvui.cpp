@@ -69,8 +69,10 @@ void CVUI::init_monitor_size()
   max_height = monitor_rect.get_height();
 }
 
-void CVUI::register_processor(std::string processor_display_name, Configuration config)
+std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_display_name, BaseProcessor& processor)
 {
+  // Register configuration
+  auto config = processor.get_config();
   std::shared_ptr<PropertyManager> processor_properties = std::make_shared<PropertyManager>(processor_display_name);
   property_managers.insert({ processor_display_name, processor_properties });
   for (const auto& boolean_property_name : config.get_boolean_properties_names()) {
@@ -85,13 +87,23 @@ void CVUI::register_processor(std::string processor_display_name, Configuration 
   for (const auto& string_property_name : config.get_string_properties_names()) {
     processor_properties->add_string_property(string_property_name, config.get_string(string_property_name));
   }
+
+  // Add processing button
+  std::shared_ptr<Gtk::Button> process_button = std::make_shared<Gtk::Button>("Process");
+  process_button->signal_clicked().connect([&processor, this]() {
+    processor.process(this->context, this->get_current_filename(), this->get_current_filename() + "_test");
+  });
+  processor_properties->add_button(process_button);
+  buttons.push_back(process_button);
+
   properties_box.append(processor_properties->get_widget());
+  return processor_properties;
 }
 
 void CVUI::build_property_tree()
 {
-  register_processor("Framing", framing_processor.get_config());
-  register_processor("Border creation", border_processor.get_config());
+  register_processor("Framing", framing_processor);
+  register_processor("Border creation", border_processor);
 }
 
 void CVUI::on_button_clicked()

@@ -91,3 +91,8 @@ void PropertyManager::add_string_property(std::string property_name, std::string
   string_properties.insert({ property_name, string_prop });
   properties_box.append(string_prop->get_widget());
 }
+
+void PropertyManager::add_button(std::shared_ptr<Gtk::Button> button)
+{
+  properties_box.append(*button);
+}

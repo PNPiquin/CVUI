@@ -13,7 +13,7 @@ std::shared_ptr<Matrix<uint32_t>> Context::get_image(std::string img_name)
 {
   auto img = imgs.find(img_name);
   if (img == imgs.end()) {
-    return std::shared_ptr<Matrix<uint32_t>>();
+    return std::make_shared<Matrix<uint32_t>>();
   }
   return img->second;
 }
@@ -27,7 +27,7 @@ std::shared_ptr<Matrix<uint8_t>> Context::get_gray_image(std::string img_name)
 {
   auto img = gray_imgs.find(img_name);
   if (img == gray_imgs.end()) {
-    return std::shared_ptr<Matrix<uint8_t>>();
+    return std::make_shared<Matrix<uint8_t>>();
   }
   return img->second;
 }

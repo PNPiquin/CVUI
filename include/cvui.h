@@ -18,6 +18,7 @@
 #include "pipeline/context.h"
 #include "pipeline/image_processing/border_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
+#include "pipeline/processor.h"
 
 #include "ui/constants.h"
 #include "ui/property_manager.h"
@@ -55,6 +56,8 @@ protected:
   Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf;
   Gtk::Picture m_image;
 
+  std::vector<std::shared_ptr<Gtk::Button>> buttons;
+
 private:
   // Window size
   int width;
@@ -84,7 +87,7 @@ private:
   BorderProcessor border_processor;
 
   // Processor registration
-  void register_processor(std::string processor_display_name, Configuration config);
+  std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);
 };
 
 #endif

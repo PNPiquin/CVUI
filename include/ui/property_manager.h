@@ -16,7 +16,7 @@ public:
   PropertyManager(std::string manager_name = "Property manager");
   ~PropertyManager();
 
-  Gtk::Widget& get_widget() { return expander_box; };
+  Gtk::Box& get_widget() { return expander_box; };
   Gtk::ToggleButton& get_toggle() { return expander_toggle; };
 
   bool get_boolean_value(std::string property_name);
@@ -32,6 +32,8 @@ public:
   void add_string_property(std::string property_name, std::string default_value);
 
   void toggle_visibility();
+
+  void add_button(std::shared_ptr<Gtk::Button> button);
 
 private:
   std::map<std::string, std::shared_ptr<BooleanProperty>> boolean_properties;

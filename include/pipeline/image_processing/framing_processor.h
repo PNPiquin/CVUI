@@ -17,7 +17,7 @@ public:
   FramingProcessor();
   ~FramingProcessor() = default;
 
-  bool process(Context context, std::string img_name, std::string output_img_name);
+  bool process(Context& context, std::string img_name, std::string output_img_name) override;
   bool apply_framing(Context context,
                      std::string base_img_name,
                      std::string framing_img_name,
