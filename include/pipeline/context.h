@@ -23,7 +23,7 @@ public:
   std::shared_ptr<Matrix<uint32_t>> get_image(std::string img_name);
 
   void add_gray_image(std::string img_name, std::shared_ptr<Matrix<uint8_t>> img);
-  std::shared_ptr<Matrix<uint8_t>> get_gray_image(std::string img_name);
+  std::shared_ptr<Matrix<uint8_t>> get_gray_image(std::string img_name, bool convert_color_img = true);
 
   void save_image(std::string img_name);
   void save_gray_image(std::string img_name);

@@ -3,11 +3,18 @@
 PropertyManager::PropertyManager(std::string manager_name)
   : expander_box(Gtk::Orientation::VERTICAL)
   , properties_box(Gtk::Orientation::VERTICAL)
-  , expander_toggle(manager_name)
+  , toggle_box(Gtk::Orientation::HORIZONTAL)
+  , toggle_label(manager_name)
   , visible(false)
 {
   // Plug toggle signal
   expander_toggle.signal_clicked().connect(sigc::mem_fun(*this, &PropertyManager::toggle_visibility));
+
+  // Expander toggle styling
+  icon_image.set_from_icon_name("go-next");
+  toggle_box.append(icon_image);
+  toggle_box.append(toggle_label);
+  expander_toggle.set_child(toggle_box);
 
   // Add everything to main box
   expander_box.append(expander_toggle);
@@ -23,8 +30,10 @@ void PropertyManager::toggle_visibility()
 {
   if (expander_toggle.get_active()) {
     properties_box.show();
+    icon_image.set_from_icon_name("go-down");
   } else {
     properties_box.hide();
+    icon_image.set_from_icon_name("go-next");
   }
 }
 
@@ -95,4 +104,9 @@ void PropertyManager::add_string_property(std::string property_name, std::string
 void PropertyManager::add_button(std::shared_ptr<Gtk::Button> button)
 {
   properties_box.append(*button);
+}
+
+void PropertyManager::add_separator()
+{
+  properties_box.append(separator);
 }

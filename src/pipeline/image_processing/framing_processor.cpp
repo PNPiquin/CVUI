@@ -22,13 +22,11 @@ bool FramingProcessor::process(Context& context, std::string img_name, std::stri
   };
   FramingService framing_service(framing_config);
   auto img = context.get_gray_image(img_name);
-  printf("Breakpoint 1\n");
 
   // If image is null, return false
   if (img->get_rows() == 0) {
     return false;
   }
-  printf("Breakpoint 2\n");
 
   auto out_img = framing_service.create_zones(img);
   context.add_gray_image(output_img_name, out_img);

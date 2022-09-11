@@ -41,7 +41,11 @@ CVUI::CVUI()
   entry_box.append(m_kmeans_button);
 
   // Build the Gtk::Paned
-  m_paned.set_start_child(properties_box);
+  properties_scroll.set_min_content_height(800);
+  properties_scroll.set_min_content_width(200);
+  properties_scroll.set_max_content_width(300);
+  properties_scroll.set_child(properties_box);
+  m_paned.set_start_child(properties_scroll);
   m_image.set_size_request(800, -1);
   m_paned.set_end_child(m_image);
 
@@ -95,6 +99,9 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
   });
   processor_properties->add_button(process_button);
   buttons.push_back(process_button);
+
+  // Styling
+  processor_properties->add_separator();
 
   properties_box.append(processor_properties->get_widget());
   return processor_properties;

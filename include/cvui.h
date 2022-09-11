@@ -9,6 +9,7 @@
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/picture.h>
+#include <gtkmm/scrolledwindow.h>
 #include <gtkmm/window.h>
 #include <map>
 #include <memory>
@@ -38,6 +39,7 @@ protected:
   void on_kmeans_button_clicked();
 
   // Layout
+  Gtk::ScrolledWindow properties_scroll;
   Gtk::Box properties_box;
 
   // Layout V2

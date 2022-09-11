@@ -6,6 +6,9 @@
 #include <string>
 
 #include <gtkmm/box.h>
+#include <gtkmm/image.h>
+#include <gtkmm/label.h>
+#include <gtkmm/separator.h>
 #include <gtkmm/togglebutton.h>
 
 #include "ui/property.h"
@@ -35,6 +38,8 @@ public:
 
   void add_button(std::shared_ptr<Gtk::Button> button);
 
+  void add_separator();
+
 private:
   std::map<std::string, std::shared_ptr<BooleanProperty>> boolean_properties;
   std::map<std::string, std::shared_ptr<IntegerProperty>> integer_properties;
@@ -44,6 +49,14 @@ private:
   // A property manager is an expander with a BoxLayout inside
   Gtk::Box expander_box, properties_box;
   Gtk::ToggleButton expander_toggle;
+
+  // Style our toggle button
+  Gtk::Box toggle_box;
+  Gtk::Image icon_image;
+  Gtk::Label toggle_label;
+
+  // Styling
+  Gtk::Separator separator;
 
   // Whether to show or hide all properties
   bool visible;

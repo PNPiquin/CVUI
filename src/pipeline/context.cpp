@@ -1,5 +1,6 @@
 #include "pipeline/context.h"
 
+#include "image_processing/utils.h"
 #include "utils/lodepng.h"
 
 Context::Context() {}
@@ -23,11 +24,20 @@ void Context::add_gray_image(std::string img_name, std::shared_ptr<Matrix<uint8_
   gray_imgs.insert({ img_name, img });
 }
 
-std::shared_ptr<Matrix<uint8_t>> Context::get_gray_image(std::string img_name)
+std::shared_ptr<Matrix<uint8_t>> Context::get_gray_image(std::string img_name, bool convert_color_img)
 {
   auto img = gray_imgs.find(img_name);
   if (img == gray_imgs.end()) {
-    return std::make_shared<Matrix<uint8_t>>();
+    if (convert_color_img) {
+      auto color_img = get_image(img_name);
+      if (color_img->get_rows() == 0) {
+        return std::make_shared<Matrix<uint8_t>>();
+      } else {
+        return ip::rgba_to_gray(color_img);
+      }
+    } else {
+      return std::make_shared<Matrix<uint8_t>>();
+    }
   }
   return img->second;
 }
