@@ -5,6 +5,7 @@ PropertyManager::PropertyManager(std::string manager_name)
   , properties_box(Gtk::Orientation::VERTICAL)
   , toggle_box(Gtk::Orientation::HORIZONTAL)
   , toggle_label(manager_name)
+  , separator(Gtk::Orientation::VERTICAL)
   , visible(false)
 {
   // Plug toggle signal

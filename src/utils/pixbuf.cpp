@@ -46,45 +46,37 @@ Matrix<uint32_t> pixbuf_to_rgba_mat(Glib::RefPtr<Gdk::Pixbuf> raw_pixbuf)
   return mat;
 }
 
-Glib::RefPtr<Gdk::Pixbuf> gray_mat_to_pixbuf(Matrix<uint8_t> gray_mat)
+Glib::RefPtr<Gdk::Pixbuf> gray_mat_to_pixbuf(std::shared_ptr<Matrix<uint8_t>> gray_mat)
 {
-  auto data = new uint8_t[gray_mat.get_cols() * gray_mat.get_rows() * 3];
-  for (size_t row = 0; row < gray_mat.get_rows(); ++row) {
-    for (size_t col = 0; col < gray_mat.get_cols(); ++col) {
-      data[(row * gray_mat.get_cols() + col) * 3] = gray_mat(row, col);
-      data[(row * gray_mat.get_cols() + col) * 3 + 1] = gray_mat(row, col);
-      data[(row * gray_mat.get_cols() + col) * 3 + 2] = gray_mat(row, col);
+  unsigned int cols = gray_mat->get_cols();
+  unsigned int rows = gray_mat->get_rows();
+  auto data = new uint8_t[cols * rows * 3];
+  for (size_t row = 0; row < rows; ++row) {
+    for (size_t col = 0; col < cols; ++col) {
+      data[(row * cols + col) * 3] = gray_mat->operator()(row, col);
+      data[(row * cols + col) * 3 + 1] = gray_mat->operator()(row, col);
+      data[(row * cols + col) * 3 + 2] = gray_mat->operator()(row, col);
     }
   }
-  return Gdk::Pixbuf::create_from_data(data,
-                                       Gdk::Colorspace::RGB,
-                                       false,
-                                       8,
-                                       gray_mat.get_cols(),
-                                       gray_mat.get_rows(),
-                                       gray_mat.get_rows(),
-                                       [](const unsigned char* data) { delete[] data; });
+  return Gdk::Pixbuf::create_from_data(
+    data, Gdk::Colorspace::RGB, false, 8, cols, rows, cols * 3, [](const unsigned char* data) { delete[] data; });
 }
-Glib::RefPtr<Gdk::Pixbuf> rgba_mat_to_pixbuf(Matrix<uint32_t> rgba_mat)
+Glib::RefPtr<Gdk::Pixbuf> rgba_mat_to_pixbuf(std::shared_ptr<Matrix<uint32_t>> rgba_mat)
 {
-  auto data = new uint8_t[rgba_mat.get_cols() * rgba_mat.get_rows() * 4];
-  for (size_t row = 0; row < rgba_mat.get_rows(); ++row) {
-    for (size_t col = 0; col < rgba_mat.get_cols(); ++col) {
-      uint32_t rgba_pixel = rgba_mat(row, col);
-      data[(row * rgba_mat.get_cols() + col) * 4] = uint8_t((rgba_pixel & 0xff000000) >> 24);
-      data[(row * rgba_mat.get_cols() + col) * 4 + 1] = uint8_t((rgba_pixel & 0x00ff0000) >> 16);
-      data[(row * rgba_mat.get_cols() + col) * 4 + 2] = uint8_t((rgba_pixel & 0x0000ff00) >> 8);
-      data[(row * rgba_mat.get_cols() + col) * 4 + 3] = uint8_t((rgba_pixel & 0x000000ff));
+  unsigned int cols = rgba_mat->get_cols();
+  unsigned int rows = rgba_mat->get_rows();
+  auto data = new uint8_t[cols * rows * 3];
+  for (size_t row = 0; row < rows; ++row) {
+    for (size_t col = 0; col < cols; ++col) {
+      uint32_t rgba_pixel = rgba_mat->operator()(row, col);
+      data[(row * cols + col) * 3] = uint8_t((rgba_pixel & 0xff000000) >> 24);
+      data[(row * cols + col) * 3 + 1] = uint8_t((rgba_pixel & 0x00ff0000) >> 16);
+      data[(row * cols + col) * 3 + 2] = uint8_t((rgba_pixel & 0x0000ff00) >> 8);
+      // data[(row * cols + col) * 4 + 3] = uint8_t((rgba_pixel & 0x000000ff));
     }
   }
-  return Gdk::Pixbuf::create_from_data(data,
-                                       Gdk::Colorspace::RGB,
-                                       true,
-                                       8,
-                                       rgba_mat.get_cols(),
-                                       rgba_mat.get_rows(),
-                                       rgba_mat.get_rows(),
-                                       [](const unsigned char* data) { delete[] data; });
+  return Gdk::Pixbuf::create_from_data(
+    data, Gdk::Colorspace::RGB, false, 8, cols, rows, cols * 3, [](const unsigned char* data) { delete[] data; });
 }
 
 }

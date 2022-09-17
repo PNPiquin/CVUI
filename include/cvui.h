@@ -7,9 +7,11 @@
 #include <gtkmm.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
+#include <gtkmm/comboboxtext.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/picture.h>
 #include <gtkmm/scrolledwindow.h>
+#include <gtkmm/separator.h>
 #include <gtkmm/window.h>
 #include <map>
 #include <memory>
@@ -36,6 +38,7 @@ public:
 protected:
   // Signal handlers:
   void on_button_clicked();
+  void on_combobox_changed();
   void on_kmeans_button_clicked();
 
   // Layout
@@ -50,6 +53,8 @@ protected:
   Gtk::Button m_button;
   Gtk::Button m_kmeans_button;
   Gtk::Entry m_input_path_entry;
+  Gtk::ComboBoxText m_img_names_combobox;
+  Gtk::Separator m_entry_separator;
 
   // Properties
   std::map<std::string, std::shared_ptr<PropertyManager>> property_managers;
@@ -78,6 +83,9 @@ private:
 
   void init_monitor_size();
   void build_property_tree();
+
+  // Image management
+  void set_image_from_name(std::string img_name);
 
   std::string get_current_filename();
 

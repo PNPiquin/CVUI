@@ -17,6 +17,8 @@ CVUI::CVUI()
   , m_button("Load")
   , m_kmeans_button("Process Framing")
   , m_input_path_entry()
+  , m_img_names_combobox()
+  , m_entry_separator(Gtk::Orientation::HORIZONTAL)
   , raw_pixbuf()
   , m_image()
   , is_processing(false)
@@ -27,7 +29,8 @@ CVUI::CVUI()
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
   m_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_button_clicked));
-  m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_kmeans_button_clicked));
+  m_img_names_combobox.signal_changed().connect(sigc::mem_fun(*this, &CVUI::on_combobox_changed));
+  // m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_kmeans_button_clicked));
 
   // Build property tree
   build_property_tree();
@@ -38,7 +41,9 @@ CVUI::CVUI()
   // Build the entry box
   entry_box.append(m_input_path_entry);
   entry_box.append(m_button);
-  entry_box.append(m_kmeans_button);
+  // entry_box.append(m_kmeans_button);
+  entry_box.append(m_entry_separator);
+  entry_box.append(m_img_names_combobox);
 
   // Build the Gtk::Paned
   properties_scroll.set_min_content_height(800);
@@ -95,7 +100,9 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
   // Add processing button
   std::shared_ptr<Gtk::Button> process_button = std::make_shared<Gtk::Button>("Process");
   process_button->signal_clicked().connect([&processor, this]() {
-    processor.process(this->context, this->get_current_filename(), this->get_current_filename() + "_test");
+    std::string output_path = this->get_current_filename() + processor.get_processor_suffix();
+    processor.process(this->context, this->get_current_filename(), output_path);
+    this->m_img_names_combobox.append(output_path);
   });
   processor_properties->add_button(process_button);
   buttons.push_back(process_button);
@@ -113,6 +120,9 @@ void CVUI::build_property_tree()
   register_processor("Border creation", border_processor);
 }
 
+// ------------------------------------------------------------------------------------------------
+//                                  SIGNALS
+// ------------------------------------------------------------------------------------------------
 void CVUI::on_button_clicked()
 {
   init_monitor_size();
@@ -125,16 +135,18 @@ void CVUI::on_button_clicked()
   context.add_gray_image(filename + "_gray", std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
   context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
 
-  // Set image
-  m_image.set_pixbuf(raw_pixbuf);
-  m_image.set_expand(true);
-  m_image.set_can_shrink(true);
-  m_image.set_keep_aspect_ratio(true);
+  // Add entries to combobox
+  m_img_names_combobox.append(filename);
+  m_img_names_combobox.set_active_text(filename);
+  m_img_names_combobox.append(filename + "_gray");
 
-  // Get size request
-  int target_width = std::min((max_width - 2 * MARGIN) / 2, raw_pixbuf->get_width());
-  int target_height = std::min((max_height - 2 * MARGIN - 100) / 2, raw_pixbuf->get_height());
-  m_image.set_size_request(target_width, target_height);
+  set_image_from_name(filename);
+}
+
+void CVUI::on_combobox_changed()
+{
+  std::string selected_img_name = m_img_names_combobox.get_active_text();
+  set_image_from_name(selected_img_name);
 }
 
 void CVUI::on_kmeans_button_clicked()
@@ -180,9 +192,38 @@ void CVUI::process_kmeans()
   is_processing = false;
 }
 
+// ------------------------------------------------------------------------------------------------
+//                                  UTILS
+// ------------------------------------------------------------------------------------------------
 std::string CVUI::get_current_filename()
 {
   // Extract image path
   input_path = m_input_path_entry.get_buffer()->get_text();
   return std::filesystem::path(input_path).stem().string();
+}
+
+void CVUI::set_image_from_name(std::string img_name)
+{
+  Glib::RefPtr<Gdk::Pixbuf> pixbuf;
+  auto img = context.get_image(img_name);
+  if (img->get_cols() == 0) {
+    auto gray_img = context.get_gray_image(img_name);
+    if (gray_img->get_cols() == 0) {
+      return;
+    }
+    pixbuf = utils::gray_mat_to_pixbuf(gray_img);
+  } else {
+    pixbuf = utils::rgba_mat_to_pixbuf(img);
+  }
+
+  // Set image
+  m_image.set_pixbuf(pixbuf);
+  m_image.set_expand(true);
+  m_image.set_can_shrink(true);
+  m_image.set_keep_aspect_ratio(true);
+
+  // Get size request
+  int target_width = std::min((max_width - 2 * MARGIN) / 2, pixbuf->get_width());
+  int target_height = std::min((max_height - 2 * MARGIN - 100) / 2, pixbuf->get_height());
+  m_image.set_size_request(target_width, target_height);
 }

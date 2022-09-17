@@ -4,6 +4,9 @@
 
 BorderProcessor::BorderProcessor()
 {
+  processor_name = "Border processor";
+  processor_suffix = "_border";
+
   // Setup the configuration
   // Define the starting grid
   config.set_integer_property(BORDER_THRESHOLD, 0);

@@ -4,6 +4,9 @@
 
 FramingProcessor::FramingProcessor()
 {
+  processor_name = "Framing processor";
+  processor_suffix = "_framing";
+
   // Setup the configuration
   // Define the starting grid
   config.set_integer_property(FRAMING_ROWS, 10);
