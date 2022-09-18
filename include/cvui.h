@@ -74,9 +74,6 @@ private:
   int max_width;
   int max_height;
 
-  // thread management
-  std::atomic<bool> is_processing;
-
   // entry text
   std::string input_path;
 
@@ -90,6 +87,7 @@ private:
   void set_image_from_name(std::string img_name);
 
   // Execution management
+  std::atomic<bool> is_processing;
   std::thread executor;
   std::function<void()> create_execution_slot_for_processor(BaseProcessor& processor);
 

@@ -231,21 +231,26 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
       std::string output_path = cvui.get_current_filename() + processor.get_processor_suffix();
       processor.process(cvui.context, cvui.get_current_filename(), output_path);
       cvui.m_img_names_combobox.append(output_path);
+      cvui.is_processing = false;
     } catch (std::exception& e) {
       std::cout << "running task, with exception..." << e.what() << std::endl;
+      cvui.is_processing = false;
       return;
     }
   };
 
   // Define function that only consists in creating a thread executing aboe lambda
   auto threaded_func = [this, &func, &processor]() {
-    try {
-      this->executor = std::thread(func, std::ref(processor), std::ref(*this));
-    } catch (std::exception& e) {
-      std::cout << "wrapped task, with exception..." << e.what() << std::endl;
-      return;
+    if (!this->is_processing) {
+      this->is_processing = true;
+      try {
+        this->executor = std::thread(func, std::ref(processor), std::ref(*this));
+      } catch (std::exception& e) {
+        std::cout << "wrapped task, with exception..." << e.what() << std::endl;
+        return;
+      }
+      executor.detach();
     }
-    executor.detach();
   };
 
   return threaded_func;
