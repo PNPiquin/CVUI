@@ -3,7 +3,6 @@
 #include <filesystem>
 #include <iostream>
 #include <memory>
-#include <thread>
 
 #include "image_processing/zone_utils.h"
 
@@ -99,11 +98,7 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
 
   // Add processing button
   std::shared_ptr<Gtk::Button> process_button = std::make_shared<Gtk::Button>("Process");
-  process_button->signal_clicked().connect([&processor, this]() {
-    std::string output_path = this->get_current_filename() + processor.get_processor_suffix();
-    processor.process(this->context, this->get_current_filename(), output_path);
-    this->m_img_names_combobox.append(output_path);
-  });
+  process_button->signal_clicked().connect(create_execution_slot_for_processor(processor));
   processor_properties->add_button(process_button);
   buttons.push_back(process_button);
 
@@ -226,4 +221,32 @@ void CVUI::set_image_from_name(std::string img_name)
   int target_width = std::min((max_width - 2 * MARGIN) / 2, pixbuf->get_width());
   int target_height = std::min((max_height - 2 * MARGIN - 100) / 2, pixbuf->get_height());
   m_image.set_size_request(target_width, target_height);
+}
+
+std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& processor)
+{
+  // Define base function
+  auto func = [](BaseProcessor& processor, CVUI& cvui) {
+    try {
+      std::string output_path = cvui.get_current_filename() + processor.get_processor_suffix();
+      processor.process(cvui.context, cvui.get_current_filename(), output_path);
+      cvui.m_img_names_combobox.append(output_path);
+    } catch (std::exception& e) {
+      std::cout << "running task, with exception..." << e.what() << std::endl;
+      return;
+    }
+  };
+
+  // Define function that only consists in creating a thread executing aboe lambda
+  auto threaded_func = [this, &func, &processor]() {
+    try {
+      this->executor = std::thread(func, std::ref(processor), std::ref(*this));
+    } catch (std::exception& e) {
+      std::cout << "wrapped task, with exception..." << e.what() << std::endl;
+      return;
+    }
+    executor.detach();
+  };
+
+  return threaded_func;
 }

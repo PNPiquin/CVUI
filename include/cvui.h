@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <cstdlib>
+#include <functional>
 #include <gdkmm/pixbuf.h>
 #include <gtkmm.h>
 #include <gtkmm/box.h>
@@ -16,6 +17,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 
 #include "pipeline/configuration.h"
 #include "pipeline/context.h"
@@ -86,6 +88,10 @@ private:
 
   // Image management
   void set_image_from_name(std::string img_name);
+
+  // Execution management
+  std::thread executor;
+  std::function<void()> create_execution_slot_for_processor(BaseProcessor& processor);
 
   std::string get_current_filename();
 
