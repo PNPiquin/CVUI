@@ -14,8 +14,7 @@ CVUI::CVUI()
   , entry_box(Gtk::Orientation::HORIZONTAL)
   , m_paned(Gtk::Orientation::HORIZONTAL)
   , m_button("Load")
-  , m_kmeans_button("Process Framing")
-  , m_input_path_entry()
+  , m_save_button("Save image")
   , m_img_names_combobox()
   , m_entry_separator(Gtk::Orientation::HORIZONTAL)
   , raw_pixbuf()
@@ -28,8 +27,8 @@ CVUI::CVUI()
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
   m_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_button_clicked));
+  m_save_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_save_button_clicked));
   m_img_names_combobox.signal_changed().connect(sigc::mem_fun(*this, &CVUI::on_combobox_changed));
-  // m_kmeans_button.signal_clicked().connect(sigc::mem_fun(*this, &CVUI::on_kmeans_button_clicked));
 
   // Build property tree
   build_property_tree();
@@ -38,9 +37,8 @@ CVUI::CVUI()
   //     - an horizontal box with all image entry/selection
   //     - a Gtk::Paned to display both the image and the properties
   // Build the entry box
-  entry_box.append(m_input_path_entry);
   entry_box.append(m_button);
-  // entry_box.append(m_kmeans_button);
+  entry_box.append(m_save_button);
   entry_box.append(m_entry_separator);
   entry_box.append(m_img_names_combobox);
 
@@ -120,36 +118,138 @@ void CVUI::build_property_tree()
 // ------------------------------------------------------------------------------------------------
 void CVUI::on_button_clicked()
 {
-  init_monitor_size();
+  auto dialog = new Gtk::FileChooserDialog("Please choose a file", Gtk::FileChooser::Action::OPEN);
+  dialog->set_transient_for(*this);
+  dialog->set_modal(true);
+  dialog->signal_response().connect(sigc::bind(sigc::mem_fun(*this, &CVUI::on_select_file_dialog_response), dialog));
 
-  std::string filename = get_current_filename();
-  // Load and resize raw image
-  raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
+  // Add response buttons to the dialog:
+  dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+  dialog->add_button("_Open", Gtk::ResponseType::OK);
 
-  // Store raw image for further processing
-  context.add_gray_image(filename + "_gray", std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
-  context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
+  // Add filters, so that only certain file types can be selected:
 
-  // Add entries to combobox
-  m_img_names_combobox.append(filename);
-  m_img_names_combobox.set_active_text(filename);
-  m_img_names_combobox.append(filename + "_gray");
+  auto filter_image = Gtk::FileFilter::create();
+  filter_image->set_name("Images");
+  filter_image->add_mime_type("image/jpeg");
+  filter_image->add_mime_type("image/png");
+  dialog->add_filter(filter_image);
 
-  set_image_from_name(filename);
+  auto filter_any = Gtk::FileFilter::create();
+  filter_any->set_name("Any files");
+  filter_any->add_pattern("*");
+  dialog->add_filter(filter_any);
+
+  // Show the dialog and wait for a user response:
+  dialog->show();
+}
+
+void CVUI::on_select_file_dialog_response(int response_id, Gtk::FileChooserDialog* dialog)
+{
+  // Handle the response:
+  switch (response_id) {
+    case Gtk::ResponseType::OK: {
+      std::cout << "File selected" << std::endl;
+
+      // Notice that this is a std::string, not a Glib::ustring.
+      init_monitor_size();
+
+      std::string input_path = dialog->get_file()->get_path();
+      std::string filename = std::filesystem::path(input_path).stem().string();
+      // Load and resize raw image
+      raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
+
+      // Store raw image for further processing
+      context.add_gray_image(filename + "_gray",
+                             std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
+      context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
+
+      // Add entries to combobox
+      m_img_names_combobox.append(filename);
+      m_img_names_combobox.set_active_text(filename);
+      m_img_names_combobox.append(filename + "_gray");
+
+      set_image_from_name(filename);
+      std::cout << "File selected: " << filename << std::endl;
+      break;
+    }
+    case Gtk::ResponseType::CANCEL: {
+      std::cout << "Cancel clicked." << std::endl;
+      break;
+    }
+    default: {
+      std::cout << "Unexpected button clicked." << std::endl;
+      break;
+    }
+  }
+  delete dialog;
+}
+
+void CVUI::on_save_button_clicked()
+{
+  auto dialog = new Gtk::FileChooserDialog("Please choose a file", Gtk::FileChooser::Action::SAVE);
+  dialog->set_transient_for(*this);
+  dialog->set_modal(true);
+  dialog->signal_response().connect(sigc::bind(sigc::mem_fun(*this, &CVUI::on_save_dialog_response), dialog));
+
+  // Add response buttons to the dialog:
+  dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+  dialog->add_button("_Save", Gtk::ResponseType::OK);
+
+  // Add filters, so that only certain file types can be selected:
+
+  auto filter_image = Gtk::FileFilter::create();
+  filter_image->set_name("Images");
+  filter_image->add_mime_type("image/jpeg");
+  filter_image->add_mime_type("image/png");
+  dialog->add_filter(filter_image);
+
+  auto filter_any = Gtk::FileFilter::create();
+  filter_any->set_name("Any files");
+  filter_any->add_pattern("*");
+  dialog->add_filter(filter_any);
+
+  // Show the dialog and wait for a user response:
+  dialog->show();
+}
+
+void CVUI::on_save_dialog_response(int response_id, Gtk::FileChooserDialog* dialog)
+{
+  // Handle the response:
+  switch (response_id) {
+    case Gtk::ResponseType::OK: {
+      std::cout << "Save clicked." << std::endl;
+
+      // Notice that this is a std::string, not a Glib::ustring.
+      auto filename = dialog->get_file()->get_path();
+      auto img = context.get_image(m_img_names_combobox.get_active_text());
+      if (img->get_cols() != 0) {
+        context.save_image(img, filename);
+      } else {
+        auto gray_img = context.get_gray_image(m_img_names_combobox.get_active_text());
+        if (gray_img->get_cols() != 0) {
+          context.save_gray_image(gray_img, filename);
+        }
+      }
+      std::cout << "File selected: " << filename << std::endl;
+      break;
+    }
+    case Gtk::ResponseType::CANCEL: {
+      std::cout << "Cancel clicked." << std::endl;
+      break;
+    }
+    default: {
+      std::cout << "Unexpected button clicked." << std::endl;
+      break;
+    }
+  }
+  delete dialog;
 }
 
 void CVUI::on_combobox_changed()
 {
   std::string selected_img_name = m_img_names_combobox.get_active_text();
   set_image_from_name(selected_img_name);
-}
-
-void CVUI::on_kmeans_button_clicked()
-{
-  if (!is_processing) {
-    std::thread kmeans_thread(&CVUI::process_kmeans, this);
-    kmeans_thread.detach();
-  }
 }
 
 void CVUI::process_kmeans()
@@ -192,9 +292,7 @@ void CVUI::process_kmeans()
 // ------------------------------------------------------------------------------------------------
 std::string CVUI::get_current_filename()
 {
-  // Extract image path
-  input_path = m_input_path_entry.get_buffer()->get_text();
-  return std::filesystem::path(input_path).stem().string();
+  return m_img_names_combobox.get_active_text();
 }
 
 void CVUI::set_image_from_name(std::string img_name)
@@ -239,7 +337,7 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
     }
   };
 
-  // Define function that only consists in creating a thread executing aboe lambda
+  // Define function that only consists in creating a thread executing above lambda
   auto threaded_func = [this, &func, &processor]() {
     if (!this->is_processing) {
       this->is_processing = true;

@@ -44,12 +44,17 @@ std::shared_ptr<Matrix<uint8_t>> Context::get_gray_image(std::string img_name, b
 
 void Context::save_gray_image(std::string img_name)
 {
-  auto gray_img = get_image(img_name);
+  auto gray_img = get_gray_image(img_name);
   if (!gray_img) {
     // No image, no-op
     return;
   }
 
+  save_gray_image(gray_img, img_name + ".png");
+}
+
+void Context::save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath)
+{
   size_t img_width = gray_img->get_cols();
   size_t img_height = gray_img->get_rows();
   std::vector<uint8_t> png_data;
@@ -64,7 +69,7 @@ void Context::save_gray_image(std::string img_name)
     }
   }
 
-  lodepng::encode(img_name + ".png", png_data, gray_img->get_cols(), gray_img->get_rows());
+  lodepng::encode(filepath, png_data, gray_img->get_cols(), gray_img->get_rows());
 }
 
 void Context::save_image(std::string img_name)

@@ -10,6 +10,7 @@
 #include <gtkmm/button.h>
 #include <gtkmm/comboboxtext.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/filechooserdialog.h>
 #include <gtkmm/picture.h>
 #include <gtkmm/scrolledwindow.h>
 #include <gtkmm/separator.h>
@@ -40,8 +41,10 @@ public:
 protected:
   // Signal handlers:
   void on_button_clicked();
+  void on_select_file_dialog_response(int response_id, Gtk::FileChooserDialog* dialog);
+  void on_save_button_clicked();
+  void on_save_dialog_response(int response_id, Gtk::FileChooserDialog* dialog);
   void on_combobox_changed();
-  void on_kmeans_button_clicked();
 
   // Layout
   Gtk::ScrolledWindow properties_scroll;
@@ -52,9 +55,7 @@ protected:
   Gtk::Paned m_paned;
 
   // Member widgets:
-  Gtk::Button m_button;
-  Gtk::Button m_kmeans_button;
-  Gtk::Entry m_input_path_entry;
+  Gtk::Button m_button, m_save_button;
   Gtk::ComboBoxText m_img_names_combobox;
   Gtk::Separator m_entry_separator;
 
