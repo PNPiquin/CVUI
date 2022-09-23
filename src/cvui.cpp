@@ -109,6 +109,8 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
 
 void CVUI::build_property_tree()
 {
+  register_processor("Gaussian blur", gaussian_blur_processor);
+  register_processor("Edge detection", edge_detection_processor);
   register_processor("Framing", framing_processor);
   register_processor("Border creation", border_processor);
 }
