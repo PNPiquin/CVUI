@@ -164,7 +164,7 @@ void CVUI::on_select_file_dialog_response(int response_id, Gtk::FileChooserDialo
       // Store raw image for further processing
       context.add_gray_image(filename + "_gray",
                              std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
-      context.add_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
+      context.add_rgba_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
 
       // Add entries to combobox
       m_img_names_combobox.append(filename);
@@ -224,7 +224,7 @@ void CVUI::on_save_dialog_response(int response_id, Gtk::FileChooserDialog* dial
 
       // Notice that this is a std::string, not a Glib::ustring.
       auto filename = dialog->get_file()->get_path();
-      auto img = context.get_image(m_img_names_combobox.get_active_text());
+      auto img = context.get_rgba_image(m_img_names_combobox.get_active_text());
       if (img->get_cols() != 0) {
         context.save_image(img, filename);
       } else {
@@ -277,7 +277,8 @@ void CVUI::process_kmeans()
   context.save_image(rgba_with_framing_img_name);
 
   // extract images
-  auto sub_images = ip::extract_zone_images(context.get_image(filename), context.get_gray_image(framing_img_name), 120);
+  auto sub_images =
+    ip::extract_zone_images(context.get_rgba_image(filename), context.get_gray_image(framing_img_name), 120);
   int i = 0;
   for (const auto& sub_img : sub_images) {
     Context::save_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
@@ -300,7 +301,7 @@ std::string CVUI::get_current_filename()
 void CVUI::set_image_from_name(std::string img_name)
 {
   Glib::RefPtr<Gdk::Pixbuf> pixbuf;
-  auto img = context.get_image(img_name);
+  auto img = context.get_rgba_image(img_name);
   if (img->get_cols() == 0) {
     auto gray_img = context.get_gray_image(img_name);
     if (gray_img->get_cols() == 0) {
@@ -329,8 +330,10 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
   auto func = [](BaseProcessor& processor, CVUI& cvui) {
     try {
       std::string output_path = cvui.get_current_filename() + processor.get_processor_suffix();
-      processor.process(cvui.context, cvui.get_current_filename(), output_path);
-      cvui.m_img_names_combobox.append(output_path);
+      bool process_ok = processor.process(cvui.context, cvui.get_current_filename(), output_path);
+      if (process_ok) {
+        cvui.m_img_names_combobox.append(output_path);
+      }
       cvui.is_processing = false;
     } catch (std::exception& e) {
       std::cout << "running task, with exception..." << e.what() << std::endl;

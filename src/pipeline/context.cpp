@@ -5,12 +5,43 @@
 
 Context::Context() {}
 
-void Context::add_image(std::string img_name, std::shared_ptr<Matrix<uint32_t>> img)
+void Context::add_image(std::string img_name, Image img)
+{
+  if (img.type == ImageType::GRAY) {
+    add_gray_image(img_name, img.gray_img);
+  } else if (img.type == ImageType::RGBA) {
+    add_rgba_image(img_name, img.rgba_img);
+  } else if (img.type == ImageType::FULL) {
+    add_gray_image(img_name, img.gray_img);
+    add_rgba_image(img_name, img.rgba_img);
+  }
+}
+
+Image Context::get_image(std::string img_name)
+{
+  Image img;
+  auto rgba_img = get_rgba_image(img_name);
+  if (rgba_img->get_cols() != 0) {
+    img.rgba_img = rgba_img;
+    img.type = ImageType::RGBA;
+  }
+  auto gray_img = get_gray_image(img_name);
+  if (gray_img->get_cols() != 0) {
+    img.gray_img = gray_img;
+    img.type = ImageType::GRAY;
+  }
+  if ((rgba_img->get_cols() != 0) & (gray_img->get_cols() != 0)) {
+    img.type = ImageType::FULL;
+  }
+  return img;
+}
+
+void Context::add_rgba_image(std::string img_name, std::shared_ptr<Matrix<uint32_t>> img)
 {
   imgs.insert({ img_name, img });
 }
 
-std::shared_ptr<Matrix<uint32_t>> Context::get_image(std::string img_name)
+std::shared_ptr<Matrix<uint32_t>> Context::get_rgba_image(std::string img_name)
 {
   auto img = imgs.find(img_name);
   if (img == imgs.end()) {
@@ -29,7 +60,7 @@ std::shared_ptr<Matrix<uint8_t>> Context::get_gray_image(std::string img_name, b
   auto img = gray_imgs.find(img_name);
   if (img == gray_imgs.end()) {
     if (convert_color_img) {
-      auto color_img = get_image(img_name);
+      auto color_img = get_rgba_image(img_name);
       if (color_img->get_rows() == 0) {
         return std::make_shared<Matrix<uint8_t>>();
       } else {
@@ -74,7 +105,7 @@ void Context::save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::st
 
 void Context::save_image(std::string img_name)
 {
-  auto rgba_img = get_image(img_name);
+  auto rgba_img = get_rgba_image(img_name);
   if (!rgba_img) {
     // No image, no-op
     return;

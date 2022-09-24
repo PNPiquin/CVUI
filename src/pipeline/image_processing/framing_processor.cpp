@@ -42,7 +42,7 @@ bool FramingProcessor::apply_framing(Context context,
                                      std::string framing_img_name,
                                      std::string output_img_name)
 {
-  auto img = context.get_image(base_img_name);
+  auto img = context.get_rgba_image(base_img_name);
   auto framing_img = context.get_gray_image(framing_img_name);
 
   // If image is null, return false
@@ -68,6 +68,6 @@ bool FramingProcessor::apply_framing(Context context,
     }
   }
 
-  context.add_image(output_img_name, img_out);
+  context.add_rgba_image(output_img_name, img_out);
   return true;
 }

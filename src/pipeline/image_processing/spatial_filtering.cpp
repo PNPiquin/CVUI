@@ -16,21 +16,25 @@ GaussianBlurProcessor::GaussianBlurProcessor()
 
 bool GaussianBlurProcessor::process(Context& context, std::string img_name, std::string output_img_name)
 {
-  auto img = context.get_gray_image(img_name);
+  auto img = context.get_image(img_name);
 
   // If image is null, return false
-  if (img->get_rows() == 0) {
+  if (img.type == ImageType::UNKNOWN) {
     return false;
   }
 
   // Apply gaussian kernel
   int kernel_size = config.get_int(KERNEL_SIZE);
   auto kernel = create_kernel(kernel_size);
-  auto res_img = std::make_shared<Matrix<uint8_t>>(img->get_rows(), img->get_cols());
-
-  ip::apply_kernel(img, kernel, res_img);
-  context.add_gray_image(img_name + processor_suffix + "_" + std::to_string(kernel_size), res_img);
-
+  if (img.type == ImageType::RGBA || img.type == ImageType::FULL) {
+    auto res_img = std::make_shared<Matrix<uint32_t>>(img.rgba_img->get_rows(), img.rgba_img->get_cols());
+    ip::apply_kernel(img.rgba_img, kernel, res_img);
+    context.add_image(output_img_name, Image(res_img));
+  } else {
+    auto res_img = std::make_shared<Matrix<uint8_t>>(img.gray_img->get_rows(), img.gray_img->get_cols());
+    ip::apply_kernel(img.gray_img, kernel, res_img);
+    context.add_image(output_img_name, Image(res_img));
+  }
   return true;
 }
 
@@ -63,34 +67,53 @@ EdgeDetectionProcessor::EdgeDetectionProcessor()
 
 bool EdgeDetectionProcessor::process(Context& context, std::string img_name, std::string output_img_name)
 {
-  auto img = context.get_gray_image(img_name);
+  auto img = context.get_image(img_name);
 
   // If image is null, return false
-  if (img->get_rows() == 0) {
+  if (img.type == ImageType::UNKNOWN) {
     return false;
   }
 
-  // Apply gaussian kernel
+  // Apply kernel
   int kernel_size = config.get_int(KERNEL_SIZE);
   auto kernel = create_kernel(kernel_size);
-  auto res_img = std::make_shared<Matrix<uint8_t>>(img->get_rows(), img->get_cols());
-
-  ip::apply_kernel(img, kernel, res_img);
-  context.add_gray_image(img_name + processor_suffix + "_" + std::to_string(kernel_size), res_img);
-
+  if (img.type == ImageType::RGBA || img.type == ImageType::FULL) {
+    auto res_img = std::make_shared<Matrix<uint32_t>>(img.rgba_img->get_rows(), img.rgba_img->get_cols());
+    ip::apply_kernel(img.rgba_img, kernel, res_img);
+    context.add_image(output_img_name, Image(res_img));
+  } else {
+    auto res_img = std::make_shared<Matrix<uint8_t>>(img.gray_img->get_rows(), img.gray_img->get_cols());
+    ip::apply_kernel(img.gray_img, kernel, res_img);
+    context.add_image(output_img_name, Image(res_img));
+  }
   return true;
 }
 
 std::shared_ptr<Matrix<float>> EdgeDetectionProcessor::create_kernel(int kernel_size)
 {
-  auto kernel = std::make_shared<Matrix<float>>(kernel_size, kernel_size);
-  float kernel_squared = float(kernel_size * kernel_size);
-  int kernel_semi_size = (kernel_size - 1) / 2;
-  for (size_t row = 0; row < size_t(kernel_size); ++row) {
-    for (size_t col = 0; col < size_t(kernel_size); ++col) {
-      kernel->operator()(row, col) = -1. / kernel_squared;
+  // kernel size can either be 3 or 5. If input is not 3, we create a 5x5 kernel
+  size_t final_kernel_size = kernel_size == 3 ? 3 : 5;
+  auto kernel = std::make_shared<Matrix<float>>(final_kernel_size, final_kernel_size);
+
+  if (final_kernel_size == 3) {
+    for (size_t x = 0; x < final_kernel_size; ++x) {
+      for (size_t y = 0; y < final_kernel_size; ++y) {
+        kernel->operator()(x, y) = -0.125f;
+      }
     }
+    kernel->operator()(1, 1) = 1.f;
+  } else {
+    for (size_t x = 0; x < final_kernel_size; ++x) {
+      for (size_t y = 0; y < final_kernel_size; ++y) {
+        kernel->operator()(x, y) = -1.f / 32.f;
+      }
+    }
+    for (size_t x = 1; x < final_kernel_size - 1; ++x) {
+      for (size_t y = 1; y < final_kernel_size - 1; ++y) {
+        kernel->operator()(x, y) = -2.f / 32.f;
+      }
+    }
+    kernel->operator()(2, 2) = 1.f;
   }
-  kernel->operator()(kernel_semi_size, kernel_semi_size) = (kernel_squared - 1.) / kernel_squared;
   return kernel;
 }
