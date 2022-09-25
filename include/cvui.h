@@ -24,7 +24,8 @@
 #include "pipeline/context.h"
 #include "pipeline/image_processing/border_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
-#include "pipeline/image_processing/spatial_filtering.hpp"
+#include "pipeline/image_processing/normalization_processor.h"
+#include "pipeline/image_processing/spatial_filtering.h"
 #include "pipeline/processor.h"
 
 #include "ui/constants.h"
@@ -101,6 +102,7 @@ private:
   // Processors
   FramingProcessor framing_processor;
   BorderProcessor border_processor;
+  NormalizationProcessor normalization_processor;
   GaussianBlurProcessor gaussian_blur_processor;
   EdgeDetectionProcessor edge_detection_processor;
 

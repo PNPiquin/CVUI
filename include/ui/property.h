@@ -6,6 +6,7 @@
 #include <gtkmm/adjustment.h>
 #include <gtkmm/box.h>
 #include <gtkmm/checkbutton.h>
+#include <gtkmm/comboboxtext.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/label.h>
 #include <gtkmm/spinbutton.h>
@@ -72,7 +73,7 @@ private:
 class StringProperty
 {
 public:
-  StringProperty(std::string propert_name = "String property", std::string default_value = "");
+  StringProperty(std::string property_name = "String property", std::string default_value = "");
   ~StringProperty();
 
   std::string get_value();
@@ -82,6 +83,24 @@ public:
 
 private:
   Gtk::Entry entry;
+  Gtk::Label property_label;
+  Gtk::Box box;
+};
+
+class EnumProperty
+{
+public:
+  EnumProperty(std::string property_name = "Enum property",
+               std::vector<std::string> values = std::vector<std::string>());
+  ~EnumProperty();
+
+  std::string get_value();
+  void set_value(std::string value);
+
+  Gtk::Widget& get_widget() { return box; };
+
+private:
+  Gtk::ComboBoxText combobox;
   Gtk::Label property_label;
   Gtk::Box box;
 };

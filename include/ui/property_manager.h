@@ -22,6 +22,9 @@ public:
   Gtk::Box& get_widget() { return expander_box; };
   Gtk::ToggleButton& get_toggle() { return expander_toggle; };
 
+  std::string get_enum_value(std::string property_name);
+  void add_enum_property(std::string property_name, std::vector<std::string> values);
+
   bool get_boolean_value(std::string property_name);
   void add_boolean_property(std::string property_name, bool default_value);
 
@@ -41,6 +44,7 @@ public:
   void add_separator();
 
 private:
+  std::map<std::string, std::shared_ptr<EnumProperty>> enum_properties;
   std::map<std::string, std::shared_ptr<BooleanProperty>> boolean_properties;
   std::map<std::string, std::shared_ptr<IntegerProperty>> integer_properties;
   std::map<std::string, std::shared_ptr<DoubleProperty>> double_properties;

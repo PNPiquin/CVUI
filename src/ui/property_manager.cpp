@@ -38,6 +38,22 @@ void PropertyManager::toggle_visibility()
   }
 }
 
+std::string PropertyManager::get_enum_value(std::string property_name)
+{
+  auto enum_prop = enum_properties.find(property_name);
+  if (enum_prop == enum_properties.end()) {
+    return "";
+  }
+  return enum_prop->second->get_value();
+}
+
+void PropertyManager::add_enum_property(std::string property_name, std::vector<std::string> values)
+{
+  std::shared_ptr<EnumProperty> enum_prop = std::make_shared<EnumProperty>(property_name, values);
+  enum_properties.insert({ property_name, enum_prop });
+  properties_box.append(enum_prop->get_widget());
+}
+
 bool PropertyManager::get_boolean_value(std::string property_name)
 {
   auto b_prop = boolean_properties.find(property_name);

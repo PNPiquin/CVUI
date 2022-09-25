@@ -7,6 +7,9 @@ Context::Context() {}
 
 void Context::add_image(std::string img_name, Image img)
 {
+  // We want an overwrite behavior, so first try to delete img if it already exists
+  delete_image(img_name);
+
   if (img.type == ImageType::GRAY) {
     add_gray_image(img_name, img.gray_img);
   } else if (img.type == ImageType::RGBA) {
@@ -34,6 +37,12 @@ Image Context::get_image(std::string img_name)
     img.type = ImageType::FULL;
   }
   return img;
+}
+
+void Context::delete_image(std::string img_name)
+{
+  imgs.erase(img_name);
+  gray_imgs.erase(img_name);
 }
 
 void Context::add_rgba_image(std::string img_name, std::shared_ptr<Matrix<uint32_t>> img)

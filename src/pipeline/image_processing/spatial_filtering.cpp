@@ -1,6 +1,6 @@
-#include "pipeline/image_processing/spatial_filtering.hpp"
+#include "pipeline/image_processing/spatial_filtering.h"
 
-#include "image_processing/spatial_filtering.hpp"
+#include "image_processing/spatial_filtering.h"
 
 // ------------------------------------------------------------------------------------------------
 //                                     SPATIAL FILTERING BASE

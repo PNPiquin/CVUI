@@ -1,4 +1,6 @@
-#include "image_processing/spatial_filtering.hpp"
+#include "image_processing/spatial_filtering.h"
+
+#include <cmath>
 
 namespace ip {
 // GRAYSCALE
@@ -44,7 +46,7 @@ uint8_t apply_kernel_on_pixel(std::shared_ptr<Matrix<uint8_t>> input_img,
       acc += input_img->operator()(row_index, col_index) * kernel->operator()(x, y);
     }
   }
-  return uint8_t(acc);
+  return uint8_t(std::sqrt(std::pow(acc, 2.f)));
 }
 
 // RGBA
@@ -96,6 +98,9 @@ uint32_t apply_kernel_on_pixel(std::shared_ptr<Matrix<uint32_t>> input_img,
       b_acc += ((rgba_pixel & 0x0000ff00) >> 8) * kernel->operator()(x, y);
     }
   }
+  r_acc = std::sqrt(std::pow(r_acc, 2.f));
+  g_acc = std::sqrt(std::pow(g_acc, 2.f));
+  b_acc = std::sqrt(std::pow(b_acc, 2.f));
   return uint32_t(uint8_t(r_acc) << 24 | uint8_t(g_acc) << 16 | uint8_t(b_acc) << 8 | 255);
 }
 }

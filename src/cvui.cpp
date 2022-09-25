@@ -81,6 +81,9 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
   auto config = processor.get_config();
   std::shared_ptr<PropertyManager> processor_properties = std::make_shared<PropertyManager>(processor_display_name);
   property_managers.insert({ processor_display_name, processor_properties });
+  for (const auto& enum_property_name : config.get_enum_properties_names()) {
+    processor_properties->add_enum_property(enum_property_name, config.get_enum_values(enum_property_name));
+  }
   for (const auto& boolean_property_name : config.get_boolean_properties_names()) {
     processor_properties->add_boolean_property(boolean_property_name, config.get_bool(boolean_property_name));
   }
@@ -111,6 +114,7 @@ void CVUI::build_property_tree()
 {
   register_processor("Gaussian blur", gaussian_blur_processor);
   register_processor("Edge detection", edge_detection_processor);
+  register_processor("Image normalization", normalization_processor);
   register_processor("Framing", framing_processor);
   register_processor("Border creation", border_processor);
 }

@@ -40,16 +40,13 @@ struct Image
 
 class Context
 {
-private:
-  std::map<std::string, std::shared_ptr<Matrix<uint32_t>>> imgs;
-  std::map<std::string, std::shared_ptr<Matrix<uint8_t>>> gray_imgs;
-
 public:
   Context();
   ~Context() = default;
 
   void add_image(std::string img_name, Image img);
   Image get_image(std::string img_name);
+  void delete_image(std::string img_name);
 
   void add_rgba_image(std::string img_name, std::shared_ptr<Matrix<uint32_t>> img);
   std::shared_ptr<Matrix<uint32_t>> get_rgba_image(std::string img_name);
@@ -61,6 +58,10 @@ public:
   void save_gray_image(std::string img_name);
   static void save_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath);
   static void save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath);
+
+private:
+  std::map<std::string, std::shared_ptr<Matrix<uint32_t>>> imgs;
+  std::map<std::string, std::shared_ptr<Matrix<uint8_t>>> gray_imgs;
 };
 
 #endif

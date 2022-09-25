@@ -97,3 +97,34 @@ void StringProperty::set_value(std::string value)
 {
   entry.set_text(value);
 }
+
+// ------------------------------------------------------------------------------------------------
+//                                     ENUM PROPERTY
+// ------------------------------------------------------------------------------------------------
+EnumProperty::EnumProperty(std::string property_name, std::vector<std::string> values)
+  : combobox()
+  , property_label(property_name)
+  , box(Gtk::Orientation::HORIZONTAL)
+{
+  for (const auto& v : values) {
+    combobox.append(v);
+  }
+  if (values.size() > 0) {
+    combobox.set_active_text(values[0]);
+  }
+
+  box.append(property_label);
+  box.append(combobox);
+}
+
+EnumProperty::~EnumProperty() {}
+
+std::string EnumProperty::get_value()
+{
+  return combobox.get_active_text();
+}
+
+void EnumProperty::set_value(std::string value)
+{
+  combobox.set_active_text(value);
+}
