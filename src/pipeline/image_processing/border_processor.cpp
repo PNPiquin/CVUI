@@ -15,15 +15,16 @@ BorderProcessor::BorderProcessor()
 
 bool BorderProcessor::process(Context context, std::string img_name, std::string output_img_name)
 {
-  auto img = context.get_gray_image(img_name);
+  Image img = context.get_image(img_name);
 
   // If image is null, return false
-  if (img->get_rows() == 0) {
+  if (img.type != ImageType::GRAY) {
     return false;
   }
 
-  auto out_img = ip::get_borders(img, config.get_int(BORDER_THRESHOLD), config.get_int(BORDER_NEIGHBORHOOD_SIZE));
-  context.add_gray_image(output_img_name, out_img);
+  auto out_img =
+    ip::get_borders(img.gray_img, config.get_int(BORDER_THRESHOLD), config.get_int(BORDER_NEIGHBORHOOD_SIZE));
+  context.add_image(output_img_name, Image(out_img));
 
   return true;
 }

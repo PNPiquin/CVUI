@@ -45,6 +45,20 @@ void Context::delete_image(std::string img_name)
   gray_imgs.erase(img_name);
 }
 
+void Context::save_image(std::string img_name, std::string filepath)
+{
+  auto rgba_img = get_rgba_image(img_name);
+  if (rgba_img->get_cols() != 0) {
+    save_rgba_image(rgba_img, filepath);
+    return;
+  }
+  auto gray_img = get_gray_image(img_name);
+  if (gray_img->get_cols() != 0) {
+    save_gray_image(gray_img, filepath);
+    return;
+  }
+}
+
 void Context::add_rgba_image(std::string img_name, std::shared_ptr<Matrix<uint32_t>> img)
 {
   imgs.insert({ img_name, img });
@@ -112,7 +126,7 @@ void Context::save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::st
   lodepng::encode(filepath, png_data, gray_img->get_cols(), gray_img->get_rows());
 }
 
-void Context::save_image(std::string img_name)
+void Context::save_rgba_image(std::string img_name)
 {
   auto rgba_img = get_rgba_image(img_name);
   if (!rgba_img) {
@@ -120,10 +134,10 @@ void Context::save_image(std::string img_name)
     return;
   }
 
-  save_image(rgba_img, img_name + ".png");
+  save_rgba_image(rgba_img, img_name + ".png");
 }
 
-void Context::save_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath)
+void Context::save_rgba_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath)
 {
   size_t img_width = rgba_img->get_cols();
   size_t img_height = rgba_img->get_rows();

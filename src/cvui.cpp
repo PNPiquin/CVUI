@@ -166,9 +166,9 @@ void CVUI::on_select_file_dialog_response(int response_id, Gtk::FileChooserDialo
       raw_pixbuf = Gdk::Pixbuf::create_from_file(input_path);
 
       // Store raw image for further processing
-      context.add_gray_image(filename + "_gray",
-                             std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf)));
-      context.add_rgba_image(filename, std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf)));
+      context.add_image(filename + "_gray",
+                        Image(std::make_shared<Matrix<uint8_t>>(utils::pixbuf_to_gray_mat(raw_pixbuf))));
+      context.add_image(filename, Image(std::make_shared<Matrix<uint32_t>>(utils::pixbuf_to_rgba_mat(raw_pixbuf))));
 
       // Add entries to combobox
       m_img_names_combobox.append(filename);
@@ -228,16 +228,7 @@ void CVUI::on_save_dialog_response(int response_id, Gtk::FileChooserDialog* dial
 
       // Notice that this is a std::string, not a Glib::ustring.
       auto filename = dialog->get_file()->get_path();
-      auto img = context.get_rgba_image(m_img_names_combobox.get_active_text());
-      if (img->get_cols() != 0) {
-        context.save_image(img, filename);
-      } else {
-        auto gray_img = context.get_gray_image(m_img_names_combobox.get_active_text());
-        if (gray_img->get_cols() != 0) {
-          context.save_gray_image(gray_img, filename);
-        }
-      }
-      std::cout << "File selected: " << filename << std::endl;
+      context.save_image(m_img_names_combobox.get_active_text(), filename);
       break;
     }
     case Gtk::ResponseType::CANCEL: {
@@ -268,24 +259,25 @@ void CVUI::process_kmeans()
   // generate kmeans image
   std::string framing_img_name = gray_filename + "_framing";
   framing_processor.process(context, gray_filename, framing_img_name);
-  context.save_gray_image(framing_img_name);
+  context.save_image(framing_img_name, framing_img_name + ".jpg");
 
   // generate border image
   std::string border_img_name = framing_img_name + "_borders";
   border_processor.process(context, framing_img_name, border_img_name);
-  context.save_gray_image(border_img_name);
+  context.save_image(border_img_name, border_img_name + ".jpg");
 
   // apply on RGBA picture
   std::string rgba_with_framing_img_name = filename + "_framing_overlay";
   framing_processor.apply_framing(context, filename, border_img_name, rgba_with_framing_img_name);
-  context.save_image(rgba_with_framing_img_name);
+  context.save_image(rgba_with_framing_img_name, rgba_with_framing_img_name + ".jpg");
 
   // extract images
-  auto sub_images =
-    ip::extract_zone_images(context.get_rgba_image(filename), context.get_gray_image(framing_img_name), 120);
+  Image rgba_img = context.get_image(filename);
+  Image gray_img = context.get_image(framing_img_name);
+  auto sub_images = ip::extract_zone_images(rgba_img.rgba_img, gray_img.gray_img, 120);
   int i = 0;
   for (const auto& sub_img : sub_images) {
-    Context::save_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
+    Context::save_rgba_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
     ++i;
   }
 
@@ -305,15 +297,13 @@ std::string CVUI::get_current_filename()
 void CVUI::set_image_from_name(std::string img_name)
 {
   Glib::RefPtr<Gdk::Pixbuf> pixbuf;
-  auto img = context.get_rgba_image(img_name);
-  if (img->get_cols() == 0) {
-    auto gray_img = context.get_gray_image(img_name);
-    if (gray_img->get_cols() == 0) {
-      return;
-    }
-    pixbuf = utils::gray_mat_to_pixbuf(gray_img);
+  Image img = context.get_image(img_name);
+  if (img.type == ImageType::FULL || img.type == ImageType::RGBA) {
+    pixbuf = utils::rgba_mat_to_pixbuf(img.rgba_img);
+  } else if (img.type == ImageType::GRAY) {
+    pixbuf = utils::gray_mat_to_pixbuf(img.gray_img);
   } else {
-    pixbuf = utils::rgba_mat_to_pixbuf(img);
+    return;
   }
 
   // Set image
