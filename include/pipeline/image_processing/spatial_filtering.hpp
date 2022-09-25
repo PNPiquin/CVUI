@@ -13,29 +13,41 @@
 #include "utils/matrix.h"
 
 const std::string KERNEL_SIZE = "Kernel size";
+const std::string KERNEL_STD = "Kernel standard deviation";
 
-class GaussianBlurProcessor : public BaseProcessor
+class SpatialFilteringProcessor : public BaseProcessor
+{
+public:
+  SpatialFilteringProcessor();
+  ~SpatialFilteringProcessor() = default;
+
+  bool process(Context& context, std::string img_name, std::string output_img_name) override;
+
+private:
+  virtual std::shared_ptr<Matrix<float>> create_kernel(Configuration& config)
+  {
+    return std::make_shared<Matrix<float>>();
+  };
+};
+
+class GaussianBlurProcessor : public SpatialFilteringProcessor
 {
 public:
   GaussianBlurProcessor();
   ~GaussianBlurProcessor() = default;
 
-  bool process(Context& context, std::string img_name, std::string output_img_name) override;
-
 private:
-  std::shared_ptr<Matrix<float>> create_kernel(int kernel_size, float sigma = 1.f);
+  std::shared_ptr<Matrix<float>> create_kernel(Configuration& config) override;
 };
 
-class EdgeDetectionProcessor : public BaseProcessor
+class EdgeDetectionProcessor : public SpatialFilteringProcessor
 {
 public:
   EdgeDetectionProcessor();
   ~EdgeDetectionProcessor() = default;
 
-  bool process(Context& context, std::string img_name, std::string output_img_name) override;
-
 private:
-  std::shared_ptr<Matrix<float>> create_kernel(int kernel_size);
+  std::shared_ptr<Matrix<float>> create_kernel(Configuration& config) override;
 };
 
 #endif
