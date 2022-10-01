@@ -40,11 +40,18 @@ private:
   std::shared_ptr<Matrix<float>> create_kernel(Configuration& config) override;
 };
 
+const std::string EDGE_ALGORITHM = "Algorithm";
+const std::string EDGE_KERNEL_ALGORITHM = "Kernel";
+const std::string EDGE_MORPH_H_ALGORITHM = "Horizontal morphological gradient";
+const std::string EDGE_MORPH_V_ALGORITHM = "Vertical morphological gradient";
+
 class EdgeDetectionProcessor : public SpatialFilteringProcessor
 {
 public:
   EdgeDetectionProcessor();
   ~EdgeDetectionProcessor() = default;
+
+  bool process(Context& context, std::string img_name, std::string output_img_name) override;
 
 private:
   std::shared_ptr<Matrix<float>> create_kernel(Configuration& config) override;

@@ -77,8 +77,7 @@ private:
   int max_width;
   int max_height;
 
-  // entry text
-  std::string input_path;
+  int img_cpt;
 
   // Image
   Context context;

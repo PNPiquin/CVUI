@@ -22,7 +22,7 @@ CVUI::CVUI()
   , is_processing(false)
 {
   // Init private attributes
-  input_path = "";
+  img_cpt = 1;
 
   // When the button receives the "clicked" signal, it will call the
   // on_button_clicked() method defined below.
@@ -323,10 +323,12 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
   // Define base function
   auto func = [](BaseProcessor& processor, CVUI& cvui) {
     try {
-      std::string output_path = cvui.get_current_filename() + processor.get_processor_suffix();
+      std::string output_path =
+        cvui.get_current_filename() + processor.get_processor_suffix() + "_" + std::to_string(cvui.img_cpt);
       bool process_ok = processor.process(cvui.context, cvui.get_current_filename(), output_path);
       if (process_ok) {
         cvui.m_img_names_combobox.append(output_path);
+        cvui.img_cpt += 1;
       }
       cvui.is_processing = false;
     } catch (std::exception& e) {
