@@ -46,9 +46,9 @@ std::shared_ptr<Matrix<uint32_t>> apply_h_gradient(std::shared_ptr<Matrix<uint32
     for (size_t col = 0; col < input_img->get_cols(); ++col) {
       for (size_t delta = 0; delta < gradient_size; ++delta) {
         RGBAPixel pix(input_img->operator()(row + delta, col));
-        buffer_r[gradient_size] = pix.r;
-        buffer_g[gradient_size] = pix.g;
-        buffer_b[gradient_size] = pix.b;
+        buffer_r[delta] = pix.r;
+        buffer_g[delta] = pix.g;
+        buffer_b[delta] = pix.b;
       }
       auto min_max_r = std::minmax_element(buffer_r.begin(), buffer_r.end());
       auto min_max_g = std::minmax_element(buffer_g.begin(), buffer_g.end());
@@ -70,9 +70,9 @@ std::shared_ptr<Matrix<uint32_t>> apply_v_gradient(std::shared_ptr<Matrix<uint32
     for (size_t col = 0; col < input_img->get_cols() - gradient_size + 1; ++col) {
       for (size_t delta = 0; delta < gradient_size; ++delta) {
         RGBAPixel pix(input_img->operator()(row, col + delta));
-        buffer_r[gradient_size] = pix.r;
-        buffer_g[gradient_size] = pix.g;
-        buffer_b[gradient_size] = pix.b;
+        buffer_r[delta] = pix.r;
+        buffer_g[delta] = pix.g;
+        buffer_b[delta] = pix.b;
       }
       auto min_max_r = std::minmax_element(buffer_r.begin(), buffer_r.end());
       auto min_max_g = std::minmax_element(buffer_g.begin(), buffer_g.end());

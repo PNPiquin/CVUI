@@ -126,6 +126,7 @@ std::shared_ptr<Matrix<float>> EdgeDetectionProcessor::create_kernel(Configurati
 
 bool EdgeDetectionProcessor::process(Context& context, std::string img_name, std::string output_img_name)
 {
+  printf("PROCESSING EdgeDetectionProcessor::process\n");
   auto img = context.get_image(img_name);
 
   // If image is null, return false
@@ -137,11 +138,15 @@ bool EdgeDetectionProcessor::process(Context& context, std::string img_name, std
   auto kernel = create_kernel(config);
   int kernel_size = config.get_int(KERNEL_SIZE);
   std::string algorithm = config.get_enum_value(EDGE_ALGORITHM);
+  printf("Algorithm name %s\n", algorithm.c_str());
+  printf("Kernel size %d\n", kernel_size);
   if (img.type == ImageType::RGBA || img.type == ImageType::FULL) {
     auto res_img = std::make_shared<Matrix<uint32_t>>(img.rgba_img->get_rows(), img.rgba_img->get_cols());
     if (algorithm == EDGE_MORPH_H_ALGORITHM) {
+      printf("EDGE_MORPH_H_ALGORITHM\n");
       res_img = ip::apply_h_gradient(img.rgba_img, kernel_size);
     } else if (algorithm == EDGE_MORPH_V_ALGORITHM) {
+      printf("EDGE_MORPH_V_ALGORITHM\n");
       res_img = ip::apply_v_gradient(img.rgba_img, kernel_size);
     } else {
       ip::apply_kernel(img.rgba_img, kernel, res_img);

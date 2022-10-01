@@ -80,7 +80,7 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
   // Register configuration
   auto config = processor.get_config();
   std::shared_ptr<PropertyManager> processor_properties = std::make_shared<PropertyManager>(processor_display_name);
-  property_managers.insert({ processor_display_name, processor_properties });
+  property_managers.insert({ processor.get_processor_name(), processor_properties });
   for (const auto& enum_property_name : config.get_enum_properties_names()) {
     processor_properties->add_enum_property(enum_property_name, config.get_enum_values(enum_property_name));
   }
@@ -108,6 +108,31 @@ std::shared_ptr<PropertyManager> CVUI::register_processor(std::string processor_
 
   properties_box.append(processor_properties->get_widget());
   return processor_properties;
+}
+
+void CVUI::update_processor_config(std::string processor_name, Configuration& config)
+{
+  auto it = property_managers.find(processor_name);
+  if (it == property_managers.end()) {
+    return;
+  }
+  std::shared_ptr<PropertyManager> processor_properties = it->second;
+
+  for (const auto& enum_property_name : config.get_enum_properties_names()) {
+    config.set_enum_value(enum_property_name, processor_properties->get_enum_value(enum_property_name));
+  }
+  for (const auto& boolean_property_name : config.get_boolean_properties_names()) {
+    config.set_bool(boolean_property_name, processor_properties->get_boolean_value(boolean_property_name));
+  }
+  for (const auto& integer_property_name : config.get_integer_properties_names()) {
+    config.set_int(integer_property_name, processor_properties->get_integer_value(integer_property_name));
+  }
+  for (const auto& double_property_name : config.get_double_properties_names()) {
+    config.set_double(double_property_name, processor_properties->get_double_value(double_property_name));
+  }
+  for (const auto& string_property_name : config.get_string_properties_names()) {
+    config.set_string(string_property_name, processor_properties->get_string_value(string_property_name));
+  }
 }
 
 void CVUI::build_property_tree()
@@ -343,6 +368,7 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
     if (!this->is_processing) {
       this->is_processing = true;
       try {
+        this->update_processor_config(processor.get_processor_name(), processor.get_config());
         this->executor = std::thread(func, std::ref(processor), std::ref(*this));
       } catch (std::exception& e) {
         std::cout << "wrapped task, with exception..." << e.what() << std::endl;

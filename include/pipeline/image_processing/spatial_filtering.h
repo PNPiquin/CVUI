@@ -21,7 +21,7 @@ public:
   SpatialFilteringProcessor();
   ~SpatialFilteringProcessor() = default;
 
-  bool process(Context& context, std::string img_name, std::string output_img_name) override;
+  virtual bool process(Context& context, std::string img_name, std::string output_img_name) override;
 
 private:
   virtual std::shared_ptr<Matrix<float>> create_kernel(Configuration& config)

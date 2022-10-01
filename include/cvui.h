@@ -107,6 +107,7 @@ private:
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);
+  void update_processor_config(std::string processor_name, Configuration& config);
 };
 
 #endif

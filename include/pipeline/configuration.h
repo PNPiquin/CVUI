@@ -36,6 +36,12 @@ public:
   void set_double_property(std::string property_name, double value = 0.);
   void set_string_property(std::string property_name, std::string value = "");
 
+  void set_enum_value(std::string property_name, std::string enum_value);
+  void set_bool(std::string property_name, bool value);
+  void set_int(std::string property_name, int value);
+  void set_double(std::string property_name, double value);
+  void set_string(std::string property_name, std::string value);
+
   std::string get_enum_value(std::string property_name);
   bool get_bool(std::string property_name);
   int get_int(std::string property_name);

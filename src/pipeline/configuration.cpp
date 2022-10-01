@@ -88,6 +88,56 @@ void Configuration::set_string_property(std::string property_name, std::string v
   }
 }
 
+void Configuration::set_enum_value(std::string property_name, std::string enum_value)
+{
+  auto it = enum_properties.find(property_name);
+  if (it == enum_properties.end()) {
+    return;
+  }
+
+  it->second.set_value(enum_value);
+}
+
+void Configuration::set_bool(std::string property_name, bool value)
+{
+  auto it = boolean_properties.find(property_name);
+  if (it == boolean_properties.end()) {
+    return;
+  }
+
+  it->second = value;
+}
+
+void Configuration::set_int(std::string property_name, int value)
+{
+  auto it = integer_properties.find(property_name);
+  if (it == integer_properties.end()) {
+    return;
+  }
+
+  it->second = value;
+}
+
+void Configuration::set_double(std::string property_name, double value)
+{
+  auto it = double_properties.find(property_name);
+  if (it == double_properties.end()) {
+    return;
+  }
+
+  it->second = value;
+}
+
+void Configuration::set_string(std::string property_name, std::string value)
+{
+  auto it = string_properties.find(property_name);
+  if (it == string_properties.end()) {
+    return;
+  }
+
+  it->second = value;
+}
+
 std::string Configuration::get_enum_value(std::string property_name)
 {
   auto it = enum_properties.find(property_name);
