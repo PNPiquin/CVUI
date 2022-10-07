@@ -5,11 +5,12 @@
 
 #include "utils/matrix.h"
 
+template<typename T>
 struct Pixel
 {
   int x;
   int y;
-  int value;
+  T value;
   Pixel()
   {
     x = 0;
@@ -17,7 +18,7 @@ struct Pixel
     value = 0;
   }
 
-  Pixel(int i, int j, int v)
+  Pixel(int i, int j, T v)
   {
     x = i;
     y = j;
@@ -29,8 +30,8 @@ struct Pixel
     x = xx;
     y = yy;
   }
-  void update_values(std::shared_ptr<Matrix<uint8_t>> img) { value = img->operator()(x, y); }
-  void set_value(int value) { value = value; }
+  void update_values(std::shared_ptr<Matrix<T>> img) { value = img->operator()(x, y); }
+  void set_value(T value) { value = value; }
 };
 
 #endif

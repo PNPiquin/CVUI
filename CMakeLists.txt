@@ -3,11 +3,13 @@ project(CVUI)
 set(CMAKE_BUILD_TYPE "RELEASE")
 
 find_package(PkgConfig)
+find_package (JPEG REQUIRED)
 
 # GTKMM setup
 pkg_check_modules(GTKMM gtkmm-4.0)
 link_directories(${GTKMM_LIBRARY_DIRS})
 include_directories(${GTKMM_INCLUDE_DIRS})
+include_directories(${JPEG_INCLUDE_DIR})
 
 # includes
 include_directories("include/")
@@ -41,3 +43,4 @@ set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COMPILE_FLAGS}")
 
 add_executable(CVUI ${SOURCES})
 target_link_libraries(CVUI ${GTKMM_LIBRARIES})
+target_link_libraries(CVUI ${JPEG_LIBRARIES})

@@ -49,6 +49,8 @@ public:
   void delete_image(std::string img_name);
   void save_image(std::string img_name, std::string filepath);
 
+  static void save_rgba_image_png(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath);
+  static void save_gray_image_png(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath);
   static void save_rgba_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath);
   static void save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath);
 

@@ -1,4 +1,5 @@
 #include "image_processing/kmeans.h"
+#include "image_processing/utils.h"
 #include <random>
 
 KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
@@ -11,22 +12,46 @@ KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
   }
   switch (distance_method) {
     case ED_SVD:
-      distance = [](Pixel p1, Pixel p2) {
-        double euclidian_distance = std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
-        double value_dist = (std::pow(p1.value - p2.value, 2));
+      distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
+        double euclidian_distance = std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2)) / 1000.;
+        RGBAPixel _p1(p1.value), _p2(p2.value);
+        double value_dist =
+          std::sqrt(std::pow(_p1.r - _p2.r, 2) + std::pow(_p1.g - _p2.g, 2) + std::pow(_p1.b - _p2.b, 2)) / 255.;
+        return (euclidian_distance + value_dist) / 2;
+      };
+      break;
+    case ED_HSV_SVD:
+      distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
+        double euclidian_distance = std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2)) / 1000.;
+        HSVAPixel _p1(p1.value), _p2(p2.value);
+        double value_dist = std::sqrt(std::pow(_p1.h - _p2.h, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) +
+                                      0.25f * std::pow(_p1.v - _p2.v, 2)) /
+                            255.;
         return (euclidian_distance + value_dist) / 2;
       };
       break;
     case EUCLIDIAN_DISTANCE:
-      distance = [](Pixel p1, Pixel p2) { return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2)); };
+      distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
+        return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
+      };
       break;
     case SVD:
-      distance = [](Pixel p1, Pixel p2) { return std::sqrt(std::pow(p1.value - p2.value, 2)); };
+      distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
+        RGBAPixel _p1(p1.value), _p2(p2.value);
+        return std::sqrt(std::pow(_p1.r - _p2.r, 2) + std::pow(_p1.g - _p2.g, 2) + std::pow(_p1.b - _p2.b, 2));
+      };
+      break;
+    case HSV_SVD:
+      distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
+        HSVAPixel _p1(p1.value), _p2(p2.value);
+        return std::sqrt(std::pow(_p1.h - _p2.h, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) +
+                         0.25f * std::pow(_p1.v - _p2.v, 2));
+      };
       break;
   }
 }
 
-void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_ptr<Matrix<uint8_t>> img_out)
+void KMeans::process_kmeans(std::shared_ptr<Matrix<uint32_t>> img, std::shared_ptr<Matrix<uint32_t>> img_out)
 {
   int rows = img->get_rows();
   int cols = img->get_cols();
@@ -47,16 +72,18 @@ void KMeans::process_kmeans(std::shared_ptr<Matrix<uint8_t>> img, std::shared_pt
     printf("iter : %d || delta : %f \n", iter, std::abs(total_value - prev_value));
   }
 
-  int color_inc = int(255 / (number_of_clusters - 1));
+  // int color_inc = int(255 / (number_of_clusters - 1));
   for (int index = 0; index < number_of_clusters; ++index) {
-    int color = index * color_inc;
+    // int gray_color = index * color_inc;
+    // RGBAPixel pix(gray_color, gray_color, gray_color);
+    uint32_t color = clusters.at(index).cluster_center.value;
     for (const auto& px : clusters.at(index).pixels) {
       img_out->operator()(px.x, px.y) = color;
     }
   }
 }
 
-void KMeans::set_seeds(std::vector<Pixel> seeds)
+void KMeans::set_seeds(std::vector<Pixel<uint32_t>> seeds)
 {
   if (int(seeds.size()) != number_of_clusters) {
     number_of_clusters = int(seeds.size());
@@ -74,7 +101,7 @@ void KMeans::set_seeds(std::vector<Pixel> seeds)
   is_initialized = true;
 }
 
-void KMeans::init(std::shared_ptr<Matrix<uint8_t>> img, int x_min, int x_max, int y_min, int y_max)
+void KMeans::init(std::shared_ptr<Matrix<uint32_t>> img, int x_min, int x_max, int y_min, int y_max)
 {
   std::default_random_engine x_generator, y_generator;
   std::uniform_int_distribution<int> x_distribution(x_min, x_max);
@@ -89,7 +116,7 @@ void KMeans::init(std::shared_ptr<Matrix<uint8_t>> img, int x_min, int x_max, in
   is_initialized = true;
 }
 
-double KMeans::process_kmeans_step(std::shared_ptr<Matrix<uint8_t>> img)
+double KMeans::process_kmeans_step(std::shared_ptr<Matrix<uint32_t>> img)
 {
   int rows = img->get_rows();
   int cols = img->get_cols();
@@ -102,7 +129,7 @@ double KMeans::process_kmeans_step(std::shared_ptr<Matrix<uint8_t>> img)
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < cols; ++j) {
       double dist;
-      Pixel px(i, j, img->operator()(i, j));
+      Pixel<uint32_t> px(i, j, img->operator()(i, j));
       int cluster_index = find_closest_cluster(px, dist);
       clusters.at(cluster_index).pixels.push_back(px);
       clusters.at(cluster_index).total_dist += dist;
@@ -130,7 +157,7 @@ double KMeans::process_kmeans_step(std::shared_ptr<Matrix<uint8_t>> img)
   return total_dist;
 }
 
-int KMeans::find_closest_cluster(Pixel p, double& dist)
+int KMeans::find_closest_cluster(Pixel<uint32_t> p, double& dist)
 {
   int cluster_index = 0;
   double min_dist = std::numeric_limits<double>::max();

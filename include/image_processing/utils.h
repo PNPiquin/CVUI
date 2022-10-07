@@ -74,7 +74,7 @@ struct HSVAPixel
     float c_max = std::max(std::max(r, g), b), c_min = std::min(std::min(r, g), b);
     float delta = c_max - c_min;
 
-    s = c_max == 0.f ? 0.f : delta / c_max;
+    s = c_max == 0.f ? 0.f : uint8_t((delta / c_max) * 255.f);
     v = uint8_t(delta * 255.f);
 
     // Compute hue
@@ -96,15 +96,15 @@ struct HSVAPixel
     float x = c * (1 - std::abs(std::fmod(_h / 60.f, 2.f) - 1.f));
     float m = v - c;
     float _r, _g, _b;
-    if (h < 60.f) {
+    if (_h < 60.f) {
       _r = c, _g = x, _b = 0.f;
-    } else if (h < 120.f) {
+    } else if (_h < 120.f) {
       _r = x, _g = c, _b = 0.f;
-    } else if (h < 180.f) {
+    } else if (_h < 180.f) {
       _r = 0.f, _g = c, _b = x;
-    } else if (h < 240.f) {
+    } else if (_h < 240.f) {
       _r = 0.f, _g = x, _b = c;
-    } else if (h < 300.f) {
+    } else if (_h < 300.f) {
       _r = x, _g = 0.f, _b = c;
     } else {
       _r = c, _g = 0.f, _b = x;
@@ -115,6 +115,11 @@ struct HSVAPixel
 
 namespace ip {
 std::shared_ptr<Matrix<uint8_t>> rgba_to_gray(std::shared_ptr<Matrix<uint32_t>> rgba_img);
+std::shared_ptr<Matrix<uint32_t>> gray_to_rgba(std::shared_ptr<Matrix<uint8_t>> gray_img);
+
+// RGBA <=> HSVA
+std::shared_ptr<Matrix<uint32_t>> rgba_to_hsva(std::shared_ptr<Matrix<uint32_t>> rgba_img);
+std::shared_ptr<Matrix<uint32_t>> hsva_to_rgba(std::shared_ptr<Matrix<uint32_t>> hsva_img);
 }
 
 #endif

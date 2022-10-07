@@ -140,8 +140,9 @@ void CVUI::build_property_tree()
   register_processor("Gaussian blur", gaussian_blur_processor);
   register_processor("Edge detection", edge_detection_processor);
   register_processor("Image normalization", normalization_processor);
-  register_processor("Framing", framing_processor);
-  register_processor("Border creation", border_processor);
+  register_processor("KMEANS", kmeans_processor);
+  // register_processor("Framing", framing_processor);
+  // register_processor("Border creation", border_processor);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -302,7 +303,7 @@ void CVUI::process_kmeans()
   auto sub_images = ip::extract_zone_images(rgba_img.rgba_img, gray_img.gray_img, 120);
   int i = 0;
   for (const auto& sub_img : sub_images) {
-    Context::save_rgba_image(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
+    Context::save_rgba_image_png(sub_img, "fragments/" + filename + std::to_string(i) + ".png");
     ++i;
   }
 

@@ -34,7 +34,7 @@ private:
   FramingConfiguration config;
   KMeans kmeans;
 
-  std::vector<Pixel> seeds;
+  std::vector<Pixel<uint32_t>> seeds;
 
   void generate_starting_grid(int img_height, int img_width);
   void randomize_grid();
