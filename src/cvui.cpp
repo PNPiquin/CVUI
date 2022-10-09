@@ -137,6 +137,8 @@ void CVUI::update_processor_config(std::string processor_name, Configuration& co
 
 void CVUI::build_property_tree()
 {
+  register_processor("Color conversion", color_conversion_processor);
+  register_processor("HSV transformations", hsv_processor);
   register_processor("Gaussian blur", gaussian_blur_processor);
   register_processor("Edge detection", edge_detection_processor);
   register_processor("Image normalization", normalization_processor);
@@ -160,7 +162,6 @@ void CVUI::on_button_clicked()
   dialog->add_button("_Open", Gtk::ResponseType::OK);
 
   // Add filters, so that only certain file types can be selected:
-
   auto filter_image = Gtk::FileFilter::create();
   filter_image->set_name("Images");
   filter_image->add_mime_type("image/jpeg");
@@ -354,6 +355,8 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
       bool process_ok = processor.process(cvui.context, cvui.get_current_filename(), output_path);
       if (process_ok) {
         cvui.m_img_names_combobox.append(output_path);
+        cvui.m_img_names_combobox.set_active_text(output_path);
+        cvui.set_image_from_name(output_path);
         cvui.img_cpt += 1;
       }
       cvui.is_processing = false;

@@ -23,6 +23,7 @@
 #include "pipeline/configuration.h"
 #include "pipeline/context.h"
 #include "pipeline/image_processing/border_processor.h"
+#include "pipeline/image_processing/color_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
 #include "pipeline/image_processing/normalization_processor.h"
@@ -106,6 +107,8 @@ private:
   GaussianBlurProcessor gaussian_blur_processor;
   EdgeDetectionProcessor edge_detection_processor;
   KMeansProcessor kmeans_processor;
+  ColorConversionProcessor color_conversion_processor;
+  HSVProcessor hsv_processor;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);
