@@ -27,8 +27,10 @@
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
 #include "pipeline/image_processing/normalization_processor.h"
+#include "pipeline/image_processing/segmentation/similitude_processor.h"
 #include "pipeline/image_processing/spatial_filtering.h"
 #include "pipeline/processor.h"
+
 
 #include "ui/constants.h"
 #include "ui/property_manager.h"
@@ -109,6 +111,7 @@ private:
   KMeansProcessor kmeans_processor;
   ColorConversionProcessor color_conversion_processor;
   HSVProcessor hsv_processor;
+  SimilitudeProcessor similitude_processor;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);

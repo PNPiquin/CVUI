@@ -14,10 +14,12 @@ include_directories(${JPEG_INCLUDE_DIR})
 # includes
 include_directories("include/")
 include_directories("include/utils/")
-include_directories("include/utils/image_processing/")
-include_directories("include/utils/pipeline/")
-include_directories("include/utils/pipeline/image_processing/")
-include_directories("include/utils/ui/")
+include_directories("include/image_processing/")
+include_directories("include/image_processing/segmentation/")
+include_directories("include/pipeline/")
+include_directories("include/pipeline/image_processing/")
+include_directories("include/pipeline/image_processing/segmentation")
+include_directories("include/ui/")
 
 # sources files
 file(GLOB SOURCES "src/*.cpp")
@@ -28,11 +30,17 @@ list(APPEND SOURCES ${SOURCES_UTILS})
 file(GLOB SOURCES_IMAGE_PROCESSING "src/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_IMAGE_PROCESSING})
 
+file(GLOB SOURCES_IMAGE_PROCESSING_SEGMENTATION "src/image_processing/segmentation/*.cpp")
+list(APPEND SOURCES ${SOURCES_IMAGE_PROCESSING_SEGMENTATION})
+
 file(GLOB SOURCES_PIPELINE "src/pipeline/*.cpp")
 list(APPEND SOURCES ${SOURCES_PIPELINE})
 
 file(GLOB SOURCES_PIPELINE_IP "src/pipeline/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_PIPELINE_IP})
+
+file(GLOB SOURCES_PIPELINE_IP_SEGMENTATION "src/pipeline/image_processing/segmentation/*.cpp")
+list(APPEND SOURCES ${SOURCES_PIPELINE_IP_SEGMENTATION})
 
 file(GLOB SOURCES_UI "src/ui/*.cpp")
 list(APPEND SOURCES ${SOURCES_UI})

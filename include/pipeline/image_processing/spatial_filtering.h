@@ -1,8 +1,6 @@
 #ifndef PIPELINE_IP_SPATIAL_FILTERING_HPP
 #define PIPELINE_IP_SPATIAL_FILTERING_HPP
 
-#define M_PI 3.14159265358979323846
-
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -10,6 +8,7 @@
 
 #include "pipeline/configuration.h"
 #include "pipeline/processor.h"
+#include "utils/constants.h"
 #include "utils/matrix.h"
 
 const std::string KERNEL_SIZE = "Kernel size";

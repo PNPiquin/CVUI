@@ -24,9 +24,11 @@ KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
       distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
         double euclidian_distance = std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2)) / 1000.;
         HSVAPixel _p1(p1.value), _p2(p2.value);
-        double value_dist = std::sqrt(std::pow(_p1.h - _p2.h, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) +
-                                      0.25f * std::pow(_p1.v - _p2.v, 2)) /
-                            255.;
+        float h_diff = std::abs(float(_p1.h) - float(_p2.h));
+        h_diff = std::min(h_diff, 255.f - h_diff);
+        double value_dist =
+          std::sqrt(std::pow(h_diff, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) + 0.25f * std::pow(_p1.v - _p2.v, 2)) /
+          255.;
         return (euclidian_distance + value_dist) / 2;
       };
       break;
@@ -44,8 +46,9 @@ KMeans::KMeans(int k, K_MEANS_DISTANCE distance_method, int max_steps)
     case HSV_SVD:
       distance = [](Pixel<uint32_t> p1, Pixel<uint32_t> p2) {
         HSVAPixel _p1(p1.value), _p2(p2.value);
-        return std::sqrt(std::pow(_p1.h - _p2.h, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) +
-                         0.25f * std::pow(_p1.v - _p2.v, 2));
+        float h_diff = std::abs(float(_p1.h) - float(_p2.h));
+        h_diff = std::min(h_diff, 255.f - h_diff);
+        return std::sqrt(std::pow(h_diff, 2) + 0.25f * std::pow(_p1.s - _p2.s, 2) + 0.25f * std::pow(_p1.v - _p2.v, 2));
       };
       break;
   }
