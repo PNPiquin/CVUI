@@ -9,6 +9,7 @@ const std::string SIMILITUDE_THRESHOLD = "Similitude threshold";
 const std::string SIMILITUDE_REGION_WIDTH = "Region width";
 const std::string SIMILITUDE_REGION_HEIGHT = "Region height";
 const std::string SIMILITUDE_MIN_REGION_SIZE = "Minimum region size";
+const std::string SIMILITUDE_MERGE_REGIONS = "Merge regions";
 
 class SimilitudeProcessor : public BaseProcessor
 {

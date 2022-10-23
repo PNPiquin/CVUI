@@ -15,7 +15,16 @@ struct HSVARegion
 
   HSVAPixel pix;
 
-  HSVARegion(size_t _row_min, size_t _row_max, size_t _col_min, size_t _col_max)
+  int top, bottom, left, right;
+
+  HSVARegion(size_t _row_min,
+             size_t _row_max,
+             size_t _col_min,
+             size_t _col_max,
+             int _top = -1,
+             int _bottom = -1,
+             int _left = -1,
+             int _right = -1)
   {
     row_min = _row_min;
     row_max = _row_max;
@@ -24,6 +33,12 @@ struct HSVARegion
 
     is_homogenous = false;
     already_processed = false;
+
+    // Put all neighboor indexes to -1
+    top = _top;
+    bottom = _bottom;
+    left = _left;
+    right = _right;
   }
 };
 
@@ -34,6 +49,7 @@ public:
                    int region_width,
                    int region_height,
                    int min_region_size,
+                   bool merge_regions,
                    std::shared_ptr<Matrix<uint32_t>> rgba_img);
   ~RegionSimilitude() = default;
 
@@ -43,6 +59,7 @@ public:
 private:
   float similitude_threshold;
   int region_width, region_height, min_region_size;
+  bool merge_regions;
 
   std::shared_ptr<Matrix<uint32_t>> rgba_img;
   std::shared_ptr<Matrix<uint32_t>> hsva_img;
@@ -56,6 +73,9 @@ private:
 
   // Utils
   float compute_hue_mean(std::vector<uint8_t> hue_vect);
+
+  // Merge neighboorhood region
+  void merge_region(HSVARegion& region_1, HSVARegion& region_2);
 };
 
 #endif
