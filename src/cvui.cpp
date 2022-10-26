@@ -144,6 +144,7 @@ void CVUI::build_property_tree()
   register_processor("Image normalization", normalization_processor);
   register_processor("KMEANS", kmeans_processor);
   register_processor("Similitude processor", similitude_processor);
+  register_processor("Bilateral filter", bilateral_filtering_processor);
   // register_processor("Framing", framing_processor);
   // register_processor("Border creation", border_processor);
 }
