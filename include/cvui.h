@@ -24,6 +24,7 @@
 #include "pipeline/context.h"
 #include "pipeline/image_processing/bilateral_filtering.h"
 #include "pipeline/image_processing/border_processor.h"
+#include "pipeline/image_processing/canny_processor.h"
 #include "pipeline/image_processing/color_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
@@ -113,6 +114,7 @@ private:
   HSVProcessor hsv_processor;
   SimilitudeProcessor similitude_processor;
   BilateralFilteringProcessor bilateral_filtering_processor;
+  CannyProcessor canny_processor;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);

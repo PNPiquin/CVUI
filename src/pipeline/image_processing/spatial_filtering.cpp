@@ -52,17 +52,7 @@ std::shared_ptr<Matrix<float>> GaussianBlurProcessor::create_kernel(Configuratio
 {
   int kernel_size = config.get_int(KERNEL_SIZE);
   double sigma = config.get_double(KERNEL_STD);
-  auto kernel = std::make_shared<Matrix<float>>(kernel_size, kernel_size);
-  int kernel_semi_size = (kernel_size - 1) / 2;
-  for (size_t row = 0; row < size_t(kernel_size); ++row) {
-    for (size_t col = 0; col < size_t(kernel_size); ++col) {
-      float _row_value = std::pow(float(row) - kernel_semi_size, 2.f);
-      float _col_value = std::pow(float(col) - kernel_semi_size, 2.f);
-      kernel->operator()(row, col) =
-        (1.f / (2.f * M_PI * sigma)) * std::exp(-(_row_value + _col_value) / (2.f * sigma * sigma));
-    }
-  }
-  return kernel;
+  return ip::create_gaussian_kernel(kernel_size, sigma);
 }
 
 // ------------------------------------------------------------------------------------------------
