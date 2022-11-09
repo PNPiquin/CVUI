@@ -26,7 +26,7 @@ void BooleanProperty::set_value(bool value)
 //                                     INTEGER PROPERTY
 // ------------------------------------------------------------------------------------------------
 IntegerProperty::IntegerProperty(std::string property_name, int default_value)
-  : spin_button_adjustment(Gtk::Adjustment::create(default_value, 0, 1000))
+  : spin_button_adjustment(Gtk::Adjustment::create(default_value, 0, 100000))
   , spin_button(spin_button_adjustment)
   , property_label(property_name)
   , box(Gtk::Orientation::HORIZONTAL)

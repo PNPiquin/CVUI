@@ -29,6 +29,7 @@
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
 #include "pipeline/image_processing/normalization_processor.h"
+#include "pipeline/image_processing/resizing_processor.h"
 #include "pipeline/image_processing/segmentation/similitude_processor.h"
 #include "pipeline/image_processing/spatial_filtering.h"
 #include "pipeline/processor.h"
@@ -115,6 +116,7 @@ private:
   SimilitudeProcessor similitude_processor;
   BilateralFilteringProcessor bilateral_filtering_processor;
   CannyProcessor canny_processor;
+  ResizingProcessor resizing_processor;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);

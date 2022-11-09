@@ -10,13 +10,13 @@ class Matrix
 {
 private:
   T* mat;
-  unsigned rows;
-  unsigned cols;
+  size_t rows;
+  size_t cols;
 
 public:
   Matrix();
-  Matrix(unsigned _rows, unsigned _cols);
-  Matrix(unsigned _rows, unsigned _cols, T* buffer);
+  Matrix(size_t _rows, size_t _cols);
+  Matrix(size_t _rows, size_t _cols, T* buffer);
   Matrix(const Matrix<T>& rhs);
   ~Matrix();
 
@@ -39,8 +39,8 @@ public:
   Matrix<T> operator/(const T& rhs);
 
   // Access the individual elements
-  T& operator()(const unsigned& row, const unsigned& col);
-  const T& operator()(const unsigned& row, const unsigned& col) const;
+  T& operator()(const size_t& row, const size_t& col);
+  const T& operator()(const size_t& row, const size_t& col) const;
   bool is_inside(const int& row, const int& col)
   {
     if (row < 0 || col < 0) {
@@ -53,8 +53,8 @@ public:
   };
 
   // Access the row and column sizes
-  unsigned get_rows() const;
-  unsigned get_cols() const;
+  size_t get_rows() const;
+  size_t get_cols() const;
 };
 
 template<typename T>
@@ -66,7 +66,7 @@ Matrix<T>::Matrix()
 }
 
 template<typename T>
-Matrix<T>::Matrix(unsigned int _rows, unsigned int _cols)
+Matrix<T>::Matrix(size_t _rows, size_t _cols)
 {
   mat = new T[_rows * _cols];
   rows = _rows;
@@ -83,7 +83,7 @@ Matrix<T>::Matrix(const Matrix<T>& rhs)
 }
 
 template<typename T>
-Matrix<T>::Matrix(unsigned int _rows, unsigned int _cols, T* buffer)
+Matrix<T>::Matrix(size_t _rows, size_t _cols, T* buffer)
 {
   rows = _rows;
   cols = _cols;
@@ -124,8 +124,8 @@ Matrix<T>& Matrix<T>::operator+(const Matrix<T>& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) + rhs(i, j);
     }
   }
@@ -138,8 +138,8 @@ Matrix<T>& Matrix<T>::operator-(const Matrix<T>& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) - rhs(i, j);
     }
   }
@@ -152,8 +152,8 @@ Matrix<T>& Matrix<T>::operator*(const Matrix<T>& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) * rhs(i, j);
     }
   }
@@ -167,8 +167,8 @@ Matrix<T>& Matrix<T>::operator+=(const Matrix<T>& rhs)
   assert(rows == rhs.get_rows());
   assert(cols == rhs.get_cols());
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       this->operator()(i, j) += rhs(i, j);
     }
   }
@@ -182,8 +182,8 @@ Matrix<T>& Matrix<T>::operator-=(const Matrix<T>& rhs)
   assert(rows == rhs.get_rows());
   assert(cols == rhs.get_cols());
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       this->operator()(i, j) -= rhs(i, j);
     }
   }
@@ -197,8 +197,8 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs)
   assert(rows == rhs.get_rows());
   assert(cols == rhs.get_cols());
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       this->operator()(i, j) *= rhs(i, j);
     }
   }
@@ -208,28 +208,28 @@ Matrix<T>& Matrix<T>::operator*=(const Matrix<T>& rhs)
 
 // Access the individual elements
 template<typename T>
-T& Matrix<T>::operator()(const unsigned& row, const unsigned& col)
+T& Matrix<T>::operator()(const size_t& row, const size_t& col)
 {
   return this->mat[row * cols + col];
 }
 
 // Access the individual elements (const)
 template<typename T>
-const T& Matrix<T>::operator()(const unsigned& row, const unsigned& col) const
+const T& Matrix<T>::operator()(const size_t& row, const size_t& col) const
 {
   return this->mat[row * cols + col];
 }
 
 // Get the number of rows of the matrix
 template<typename T>
-unsigned Matrix<T>::get_rows() const
+size_t Matrix<T>::get_rows() const
 {
   return this->rows;
 }
 
 // Get the number of columns of the matrix
 template<typename T>
-unsigned Matrix<T>::get_cols() const
+size_t Matrix<T>::get_cols() const
 {
   return this->cols;
 }
@@ -239,8 +239,8 @@ Matrix<T> Matrix<T>::transpose()
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->mat[j][i];
     }
   }
@@ -254,8 +254,8 @@ Matrix<T> Matrix<T>::operator+(const T& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) + rhs;
     }
   }
@@ -269,8 +269,8 @@ Matrix<T> Matrix<T>::operator-(const T& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) - rhs;
     }
   }
@@ -284,8 +284,8 @@ Matrix<T> Matrix<T>::operator*(const T& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) * rhs;
     }
   }
@@ -299,8 +299,8 @@ Matrix<T> Matrix<T>::operator/(const T& rhs)
 {
   Matrix result(rows, cols, 0.0);
 
-  for (unsigned i = 0; i < rows; i++) {
-    for (unsigned j = 0; j < cols; j++) {
+  for (size_t i = 0; i < rows; i++) {
+    for (size_t j = 0; j < cols; j++) {
       result(i, j) = this->operator()(i, j) / rhs;
     }
   }

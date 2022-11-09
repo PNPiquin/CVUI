@@ -139,6 +139,7 @@ void CVUI::build_property_tree()
 {
   register_processor("Color conversion", color_conversion_processor);
   register_processor("HSV transformations", hsv_processor);
+  register_processor("Resizing", resizing_processor);
   register_processor("Gaussian blur", gaussian_blur_processor);
   register_processor("Edge detection", edge_detection_processor);
   register_processor("Canny edge detection", canny_processor);
