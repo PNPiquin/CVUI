@@ -16,6 +16,13 @@ std::shared_ptr<Matrix<uint32_t>> apply_h_gradient(std::shared_ptr<Matrix<uint32
 std::shared_ptr<Matrix<uint32_t>> apply_v_gradient(std::shared_ptr<Matrix<uint32_t>> input_img,
                                                    size_t gradient_size = 2);
 
+// Erosion - Dilation
+std::shared_ptr<Matrix<uint8_t>> apply_erosion(std::shared_ptr<Matrix<uint8_t>> input_img, size_t kernel_size = 2);
+std::shared_ptr<Matrix<uint8_t>> apply_dilatation(std::shared_ptr<Matrix<uint8_t>> input_img, size_t kernel_size = 2);
+
+std::shared_ptr<Matrix<uint32_t>> apply_erosion(std::shared_ptr<Matrix<uint32_t>> input_img, size_t kernel_size = 2);
+std::shared_ptr<Matrix<uint32_t>> apply_dilatation(std::shared_ptr<Matrix<uint32_t>> input_img, size_t kernel_size = 2);
+
 template<typename T>
 std::vector<T> extract_neighborhood(std::shared_ptr<Matrix<T>> input_img,
                                     std::shared_ptr<Matrix<uint8_t>> kernel,

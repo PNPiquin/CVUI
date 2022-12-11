@@ -141,11 +141,13 @@ void CVUI::build_property_tree()
   register_processor("HSV transformations", hsv_processor);
   register_processor("Resizing", resizing_processor);
   register_processor("Gaussian blur", gaussian_blur_processor);
+  register_processor("Morphological operation", morphological_processor);
   register_processor("Edge detection", edge_detection_processor);
   register_processor("Canny edge detection", canny_processor);
   register_processor("Image normalization", normalization_processor);
   register_processor("KMEANS", kmeans_processor);
   register_processor("Similitude processor", similitude_processor);
+  register_processor("Blob extractor", blob_extractor);
   register_processor("Bilateral filter", bilateral_filtering_processor);
   // register_processor("Framing", framing_processor);
   // register_processor("Border creation", border_processor);

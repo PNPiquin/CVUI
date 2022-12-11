@@ -28,11 +28,14 @@
 #include "pipeline/image_processing/color_processor.h"
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
+#include "pipeline/image_processing/morphological_processor.h"
 #include "pipeline/image_processing/normalization_processor.h"
+#include "pipeline/image_processing/object_detection/blob_extractor.h"
 #include "pipeline/image_processing/resizing_processor.h"
 #include "pipeline/image_processing/segmentation/similitude_processor.h"
 #include "pipeline/image_processing/spatial_filtering.h"
 #include "pipeline/processor.h"
+
 
 #include "ui/constants.h"
 #include "ui/property_manager.h"
@@ -117,6 +120,8 @@ private:
   BilateralFilteringProcessor bilateral_filtering_processor;
   CannyProcessor canny_processor;
   ResizingProcessor resizing_processor;
+  BlobExtractor blob_extractor;
+  MorphologicalProcessor morphological_processor;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);

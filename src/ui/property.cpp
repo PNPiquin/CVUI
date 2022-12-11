@@ -51,7 +51,7 @@ void IntegerProperty::set_value(int value)
 //                                     DOUBLE PROPERTY
 // ------------------------------------------------------------------------------------------------
 DoubleProperty::DoubleProperty(std::string property_name, double default_value)
-  : spin_button_adjustment(Gtk::Adjustment::create(default_value, 0., 1000., 0.5))
+  : spin_button_adjustment(Gtk::Adjustment::create(default_value, 0., 1e6, 0.5))
   , spin_button(spin_button_adjustment, 0.5, 2)
   , property_label(property_name)
   , box(Gtk::Orientation::HORIZONTAL)
