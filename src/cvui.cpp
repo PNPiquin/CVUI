@@ -149,8 +149,9 @@ void CVUI::build_property_tree()
   register_processor("Similitude processor", similitude_processor);
   register_processor("Blob extractor", blob_extractor);
   register_processor("Bilateral filter", bilateral_filtering_processor);
-  // register_processor("Framing", framing_processor);
-  // register_processor("Border creation", border_processor);
+
+  // Complex processors
+  register_processor("Crestline Detector", crestline_detector);
 }
 
 // ------------------------------------------------------------------------------------------------

@@ -20,6 +20,7 @@ include_directories("include/image_processing/object_detection/")
 include_directories("include/image_processing/segmentation/")
 include_directories("include/pipeline/")
 include_directories("include/pipeline/image_processing/")
+include_directories("include/pipeline/image_processing/complex/")
 include_directories("include/pipeline/image_processing/object_detection/")
 include_directories("include/pipeline/image_processing/segmentation/")
 include_directories("include/ui/")
@@ -44,6 +45,9 @@ list(APPEND SOURCES ${SOURCES_PIPELINE})
 
 file(GLOB SOURCES_PIPELINE_IP "src/pipeline/image_processing/*.cpp")
 list(APPEND SOURCES ${SOURCES_PIPELINE_IP})
+
+file(GLOB SOURCES_PIPELINE_COMPLEX "src/pipeline/image_processing/complex/*.cpp")
+list(APPEND SOURCES ${SOURCES_PIPELINE_COMPLEX})
 
 file(GLOB SOURCES_PIPELINE_IP_OBJECT_DETECTION "src/pipeline/image_processing/object_detection/*.cpp")
 list(APPEND SOURCES ${SOURCES_PIPELINE_IP_OBJECT_DETECTION})

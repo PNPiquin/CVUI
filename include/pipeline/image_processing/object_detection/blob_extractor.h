@@ -7,7 +7,7 @@
 
 const std::string BE_X_MIN_SPAN = "Minimun vertical span";
 const std::string BE_Y_MIN_SPAN = "Minimun horizontal span";
-const std::string BE_XY_MIN_RATIO = "Minimun horizontal / vertival ratio";
+const std::string BE_XY_MIN_RATIO = "Minimun horizontal / vertical ratio";
 const std::string BE_XY_MAX_RATIO = "Maximum horizontal / vertical ratio";
 
 class BlobExtractor : public BaseProcessor

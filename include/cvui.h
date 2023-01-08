@@ -26,6 +26,7 @@
 #include "pipeline/image_processing/border_processor.h"
 #include "pipeline/image_processing/canny_processor.h"
 #include "pipeline/image_processing/color_processor.h"
+#include "pipeline/image_processing/complex/crestline_detector.h"
 #include "pipeline/image_processing/framing_processor.h"
 #include "pipeline/image_processing/kmeans_processor.h"
 #include "pipeline/image_processing/morphological_processor.h"
@@ -122,6 +123,7 @@ private:
   ResizingProcessor resizing_processor;
   BlobExtractor blob_extractor;
   MorphologicalProcessor morphological_processor;
+  CrestlineDetector crestline_detector;
 
   // Processor registration
   std::shared_ptr<PropertyManager> register_processor(std::string processor_display_name, BaseProcessor& processor);
