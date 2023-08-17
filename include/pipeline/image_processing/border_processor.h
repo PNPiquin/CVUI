@@ -14,7 +14,7 @@ public:
   BorderProcessor();
   ~BorderProcessor() = default;
 
-  bool process(Context context, std::string img_name, std::string output_img_name);
+  bool process(Context& context, std::string img_name, std::string output_img_name);
 };
 
 #endif

@@ -13,7 +13,7 @@ BorderProcessor::BorderProcessor()
   config.set_integer_property(BORDER_NEIGHBORHOOD_SIZE, 2);
 }
 
-bool BorderProcessor::process(Context context, std::string img_name, std::string output_img_name)
+bool BorderProcessor::process(Context& context, std::string img_name, std::string output_img_name)
 {
   Image img = context.get_image(img_name);
 

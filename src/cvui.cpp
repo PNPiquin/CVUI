@@ -206,8 +206,10 @@ void CVUI::on_select_file_dialog_response(int response_id, Gtk::FileChooserDialo
 
       // Add entries to combobox
       m_img_names_combobox.append(filename);
+      known_image_names.push_back(filename);
       m_img_names_combobox.set_active_text(filename);
       m_img_names_combobox.append(filename + "_gray");
+      known_image_names.push_back(filename + "_gray");
 
       set_image_from_name(filename);
       std::cout << "File selected: " << filename << std::endl;
@@ -361,10 +363,18 @@ std::function<void()> CVUI::create_execution_slot_for_processor(BaseProcessor& p
         cvui.get_current_filename() + processor.get_processor_suffix() + "_" + std::to_string(cvui.img_cpt);
       bool process_ok = processor.process(cvui.context, cvui.get_current_filename(), output_path);
       if (process_ok) {
-        cvui.m_img_names_combobox.append(output_path);
-        cvui.m_img_names_combobox.set_active_text(output_path);
-        cvui.set_image_from_name(output_path);
-        cvui.img_cpt += 1;
+        // Get all images from context and insert in combobox the missing ones
+        auto image_names = cvui.context.get_image_names();
+        for (const auto &image_name : image_names) {
+          if (std::find(cvui.known_image_names.begin(), cvui.known_image_names.end(), image_name) ==
+              cvui.known_image_names.end()) {
+            cvui.m_img_names_combobox.append(image_name);
+            cvui.known_image_names.push_back(image_name);
+            cvui.m_img_names_combobox.set_active_text(image_name);
+            cvui.set_image_from_name(image_name);
+            cvui.img_cpt += 1;
+          }
+        }
       }
       cvui.is_processing = false;
     } catch (std::exception& e) {

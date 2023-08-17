@@ -253,3 +253,20 @@ void Context::save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::st
   auto rgba_img = ip::gray_to_rgba(gray_img);
   save_rgba_image(rgba_img, filepath);
 }
+
+std::vector<std::string> Context::get_image_names()
+{
+  std::vector<std::string> image_names;
+  std::set<std::string> image_names_set;
+
+  for (auto iter = imgs.begin(); iter != imgs.end(); ++iter) {
+    image_names_set.insert(iter->first);
+  }
+
+  for (auto iter = gray_imgs.begin(); iter != gray_imgs.end(); ++iter) {
+    image_names_set.insert(iter->first);
+  }
+
+  std::copy(image_names_set.begin(), image_names_set.end(), std::back_inserter(image_names));
+  return image_names;
+}

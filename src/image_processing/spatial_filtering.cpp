@@ -204,4 +204,23 @@ std::shared_ptr<Matrix<float>> create_sobel_v_kernel()
 
   return sobel_v;
 }
+
+std::shared_ptr<Matrix<float>> create_laplacian_kernel()
+{
+  auto sobel_v = std::make_shared<Matrix<float>>(3, 3);
+
+  sobel_v->operator()(0, 0) = -0.125f;
+  sobel_v->operator()(0, 1) = -0.125f;
+  sobel_v->operator()(0, 2) = -0.125f;
+
+  sobel_v->operator()(1, 0) = -0.125f;
+  sobel_v->operator()(1, 1) = 1.f;
+  sobel_v->operator()(1, 2) = -0.125f;
+
+  sobel_v->operator()(2, 0) = -0.125f;
+  sobel_v->operator()(2, 1) = -0.125f;
+  sobel_v->operator()(2, 2) = -0.125f;
+
+  return sobel_v;
+}
 }

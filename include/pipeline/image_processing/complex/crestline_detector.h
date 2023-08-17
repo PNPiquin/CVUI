@@ -34,6 +34,8 @@ private:
   std::shared_ptr<Matrix<float>> create_kernel(Configuration& config);
 
   std::shared_ptr<Matrix<uint8_t>> select_top_pixels(std::shared_ptr<Matrix<uint8_t>> input_img, int n_pixels);
+  std::shared_ptr<Matrix<uint32_t>> create_texture_img(std::shared_ptr<Matrix<uint8_t>> crestine_img,
+                                                       std::shared_ptr<Matrix<uint32_t>> laplacian_img);
 };
 
 #endif

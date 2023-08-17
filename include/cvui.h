@@ -1,6 +1,7 @@
 #ifndef CVUI_H
 #define CVUI_H
 
+#include <algorithm>
 #include <atomic>
 #include <cstdlib>
 #include <functional>
@@ -19,6 +20,8 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <vector>
+
 
 #include "pipeline/configuration.h"
 #include "pipeline/context.h"
@@ -36,7 +39,6 @@
 #include "pipeline/image_processing/segmentation/similitude_processor.h"
 #include "pipeline/image_processing/spatial_filtering.h"
 #include "pipeline/processor.h"
-
 
 #include "ui/constants.h"
 #include "ui/property_manager.h"
@@ -88,6 +90,7 @@ private:
   int max_height;
 
   int img_cpt;
+  std::vector<std::string> known_image_names;
 
   // Image
   Context context;

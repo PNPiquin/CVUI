@@ -2,6 +2,7 @@
 
 #include "image_processing/canny.h"
 #include "image_processing/morphological_operations.h"
+#include "image_processing/normalization.h"
 #include "image_processing/object_detection/blob_detection.h"
 #include "image_processing/spatial_filtering.h"
 #include "image_processing/utils.h"
@@ -15,11 +16,11 @@ CrestlineDetector::CrestlineDetector()
   config.set_double_property(CD_X_MIN_SPAN, 0.);
   config.set_double_property(CD_Y_MIN_SPAN, 200.);
   config.set_double_property(CD_XY_MIN_RATIO, 0.);
-  config.set_double_property(CD_XY_MAX_RATIO, 0.25);
+  config.set_double_property(CD_XY_MAX_RATIO, 100.);
 
   // Dilatation
   config.set_integer_property(CD_DILATATION_SIZE, 2);
-  config.set_integer_property(CD_DILATATION_REPETITTION, 2);
+  config.set_integer_property(CD_DILATATION_REPETITTION, 6);
 
   // Canny
   config.set_double_property(CD_CANNY_LOW_THRESHOLD, 23.);
@@ -30,7 +31,7 @@ CrestlineDetector::CrestlineDetector()
   config.set_double_property(CD_KERNEL_STD, 1.0);
 
   // Post-treatment
-  config.set_integer_property(CD_KEEP_TOP_PIXELS, 5);
+  config.set_integer_property(CD_KEEP_TOP_PIXELS, 10);
 }
 
 bool CrestlineDetector::process(Context& context, std::string img_name, std::string output_img_name)
@@ -78,6 +79,17 @@ bool CrestlineDetector::process(Context& context, std::string img_name, std::str
   }
 
   context.add_image(output_img_name, Image(res_img));
+
+  // To keep texture below the crestline:
+  // - clasic edge kernel on input image -> keep only what is below the crestline
+  // - normalize result to 70% of crestline intensity
+  auto laplacian_kernel = ip::create_laplacian_kernel();
+  auto laplacian_img_raw = std::make_shared<Matrix<uint32_t>>(img.rgba_img->get_rows(), img.rgba_img->get_cols());
+  auto laplacian_img = ip::min_max_normalization(laplacian_img_raw);
+  ip::apply_kernel(img.rgba_img, laplacian_kernel, laplacian_img);
+  auto texture_img = create_texture_img(res_img, laplacian_img);
+  context.add_image(output_img_name + "_texture", Image(texture_img));
+
   return true;
 }
 
@@ -108,5 +120,39 @@ std::shared_ptr<Matrix<uint8_t>> CrestlineDetector::select_top_pixels(std::share
     }
   }
 
+  return output_img;
+}
+
+std::shared_ptr<Matrix<uint32_t>> CrestlineDetector::create_texture_img(std::shared_ptr<Matrix<uint8_t>> crestine_img,
+                                                                        std::shared_ptr<Matrix<uint32_t>> laplacian_img)
+{
+  auto output_img = std::make_shared<Matrix<uint32_t>>(crestine_img->get_rows(), crestine_img->get_cols());
+
+  for (size_t col = 0; col < output_img->get_cols(); col++) {
+    bool reached_crestline = false;
+    size_t from_crestline = 0;
+    for (size_t row = 0; row < output_img->get_rows(); row++) {
+      uint8_t pix = crestine_img->operator()(row, col);
+      if (pix > 0) {
+        reached_crestline = true;
+        output_img->operator()(row, col) = RGBAPixel(pix, pix, pix).to_uint32_t();
+      }
+
+      if (reached_crestline) {
+        from_crestline++;
+      }
+
+      if (from_crestline > 10) {
+        output_img->operator()(row, col) = laplacian_img->operator()(row, col);
+      }
+    }
+  }
+
+  for (size_t col = 0; col < output_img->get_cols(); col++) {
+    for (size_t row = 0; row < output_img->get_rows(); row++) {
+      RGBAPixel pix = output_img->operator()(row, col);
+      output_img->operator()(row, col) = RGBAPixel(255 - pix.r, 255 - pix.g, 255 - pix.b).to_uint32_t();
+    }
+  }
   return output_img;
 }

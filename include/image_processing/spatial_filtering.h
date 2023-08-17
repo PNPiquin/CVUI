@@ -38,6 +38,7 @@ float apply_kernel_on_pixel_float(std::shared_ptr<Matrix<uint8_t>> input_img,
 std::shared_ptr<Matrix<float>> create_gaussian_kernel(int kernel_size, float sigma);
 std::shared_ptr<Matrix<float>> create_sobel_h_kernel();
 std::shared_ptr<Matrix<float>> create_sobel_v_kernel();
+std::shared_ptr<Matrix<float>> create_laplacian_kernel();
 }
 
 #endif

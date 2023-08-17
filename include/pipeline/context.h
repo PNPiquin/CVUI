@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -53,6 +54,9 @@ public:
   static void save_gray_image_png(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath);
   static void save_rgba_image(std::shared_ptr<Matrix<uint32_t>> rgba_img, std::string filepath);
   static void save_gray_image(std::shared_ptr<Matrix<uint8_t>> gray_img, std::string filepath);
+
+  // To sync combobox with images in context
+  std::vector<std::string> get_image_names();
 
 private:
   std::map<std::string, std::shared_ptr<Matrix<uint32_t>>> imgs;
