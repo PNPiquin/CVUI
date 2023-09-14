@@ -31,7 +31,7 @@ CrestlineDetector::CrestlineDetector()
   config.set_double_property(CD_KERNEL_STD, 1.0);
 
   // Post-treatment
-  config.set_integer_property(CD_KEEP_TOP_PIXELS, 10);
+  config.set_integer_property(CD_KEEP_TOP_PIXELS, 7);
 }
 
 bool CrestlineDetector::process(Context& context, std::string img_name, std::string output_img_name)
@@ -128,6 +128,12 @@ std::shared_ptr<Matrix<uint32_t>> CrestlineDetector::create_texture_img(std::sha
 {
   auto output_img = std::make_shared<Matrix<uint32_t>>(crestine_img->get_rows(), crestine_img->get_cols());
 
+  float r_ref = 255 / 255.f, g_ref = 64 / 255.f, b_ref = 64 / 255.f;
+  auto get_texture_color = [&r_ref, &g_ref, &b_ref](uint32_t raw_value) {
+    uint8_t gray_value = RGBAPixel(raw_value).to_uint8_t();
+    return RGBAPixel(r_ref * gray_value, g_ref * gray_value, b_ref * gray_value).to_uint32_t();
+  };
+
   for (size_t col = 0; col < output_img->get_cols(); col++) {
     bool reached_crestline = false;
     size_t from_crestline = 0;
@@ -135,7 +141,7 @@ std::shared_ptr<Matrix<uint32_t>> CrestlineDetector::create_texture_img(std::sha
       uint8_t pix = crestine_img->operator()(row, col);
       if (pix > 0) {
         reached_crestline = true;
-        output_img->operator()(row, col) = RGBAPixel(pix, pix, pix).to_uint32_t();
+        output_img->operator()(row, col) = get_texture_color((pix << 24 | pix << 16 | pix << 8 | pix));
       }
 
       if (reached_crestline) {
@@ -143,7 +149,7 @@ std::shared_ptr<Matrix<uint32_t>> CrestlineDetector::create_texture_img(std::sha
       }
 
       if (from_crestline > 10) {
-        output_img->operator()(row, col) = laplacian_img->operator()(row, col);
+        output_img->operator()(row, col) = get_texture_color(laplacian_img->operator()(row, col));
       }
     }
   }

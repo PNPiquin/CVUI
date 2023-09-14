@@ -17,6 +17,7 @@ public:
   RGBAPixel(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a);
   RGBAPixel(uint32_t rgba_value);
   uint32_t to_uint32_t();
+  uint8_t to_uint8_t();
 };
 
 class HSVAPixel
